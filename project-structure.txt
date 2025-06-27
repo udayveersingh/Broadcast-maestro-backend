@@ -1,0 +1,375 @@
+# Broadcast Maestro - Laravel Backend Structure
+
+## 1. Database Schema
+
+### Core Tables
+
+```sql
+-- Users table
+CREATE TABLE users (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    email_verified_at TIMESTAMP NULL,
+    password VARCHAR(255) NOT NULL,
+    avatar VARCHAR(255) NULL,
+    role ENUM('admin', 'manager', 'user') DEFAULT 'user',
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+
+-- Campaigns table
+CREATE TABLE campaigns (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NULL,
+    type ENUM('email', 'social', 'sms', 'push') NOT NULL,
+    status ENUM('draft', 'active', 'paused', 'completed', 'archived') DEFAULT 'draft',
+    start_date DATETIME NULL,
+    end_date DATETIME NULL,
+    budget DECIMAL(10,2) NULL,
+    target_audience_id BIGINT UNSIGNED NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (target_audience_id) REFERENCES target_audiences(id) ON DELETE SET NULL
+);
+
+-- Target Audiences table
+CREATE TABLE target_audiences (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NULL,
+    criteria JSON NOT NULL, -- Store audience criteria as JSON
+    estimated_size INT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Campaign Goals table
+CREATE TABLE campaign_goals (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    campaign_id BIGINT UNSIGNED NOT NULL,
+    goal_type ENUM('clicks', 'conversions', 'impressions', 'engagement') NOT NULL,
+    target_value INT NOT NULL,
+    current_value INT DEFAULT 0,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE
+);
+
+-- Campaign Content table
+CREATE TABLE campaign_contents (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    campaign_id BIGINT UNSIGNED NOT NULL,
+    content_type ENUM('text', 'image', 'video', 'html') NOT NULL,
+    title VARCHAR(255) NULL,
+    content TEXT NOT NULL,
+    media_url VARCHAR(255) NULL,
+    tone_of_voice ENUM('professional', 'casual', 'friendly', 'urgent', 'promotional') DEFAULT 'professional',
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE
+);
+
+-- Campaign Analytics table
+CREATE TABLE campaign_analytics (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    campaign_id BIGINT UNSIGNED NOT NULL,
+    metric_type VARCHAR(50) NOT NULL, -- impressions, clicks, conversions, etc.
+    metric_value INT NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE
+);
+
+-- Media Library table
+CREATE TABLE media_library (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    file_size INT NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    alt_text VARCHAR(255) NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Datasets table (for tools data)
+CREATE TABLE datasets (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NULL,
+    data_type ENUM('customer', 'product', 'campaign', 'analytics') NOT NULL,
+    file_path VARCHAR(255) NULL,
+    data JSON NULL, -- Store structured data
+    predefined_by_bm BOOLEAN DEFAULT FALSE,
+    customizable_by_company BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+## 2. Laravel Directory Structure
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── API/
+│   │   │   ├── AuthController.php
+│   │   │   ├── CampaignController.php
+│   │   │   ├── TargetAudienceController.php
+│   │   │   ├── AnalyticsController.php
+│   │   │   ├── MediaController.php
+│   │   │   ├── DatasetController.php
+│   │   │   └── DashboardController.php
+│   │   └── Admin/
+│   │       ├── AdminDashboardController.php
+│   │       ├── UserManagementController.php
+│   │       └── SystemSettingsController.php
+│   ├── Middleware/
+│   │   ├── AdminMiddleware.php
+│   │   └── CheckUserStatus.php
+│   ├── Requests/
+│   │   ├── Campaign/
+│   │   │   ├── CreateCampaignRequest.php
+│   │   │   └── UpdateCampaignRequest.php
+│   │   ├── Auth/
+│   │   │   ├── LoginRequest.php
+│   │   │   └── RegisterRequest.php
+│   │   └── TargetAudience/
+│   │       ├── CreateTargetAudienceRequest.php
+│   │       └── UpdateTargetAudienceRequest.php
+│   └── Resources/
+│       ├── CampaignResource.php
+│       ├── UserResource.php
+│       ├── TargetAudienceResource.php
+│       └── AnalyticsResource.php
+├── Models/
+│   ├── User.php
+│   ├── Campaign.php
+│   ├── TargetAudience.php
+│   ├── CampaignGoal.php
+│   ├── CampaignContent.php
+│   ├── CampaignAnalytics.php
+│   ├── MediaLibrary.php
+│   └── Dataset.php
+└── Services/
+    ├── CampaignService.php
+    ├── AnalyticsService.php
+    ├── MediaService.php
+    └── ReportingService.php
+```
+
+## 3. API Endpoints Structure
+
+### Authentication APIs
+```
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+POST /api/auth/refresh
+GET  /api/auth/profile
+PUT  /api/auth/profile
+```
+
+### Campaign Management APIs
+```
+GET    /api/campaigns              # List all campaigns
+POST   /api/campaigns              # Create new campaign
+GET    /api/campaigns/{id}         # Get campaign details
+PUT    /api/campaigns/{id}         # Update campaign
+DELETE /api/campaigns/{id}         # Delete campaign
+POST   /api/campaigns/{id}/clone   # Clone campaign
+PUT    /api/campaigns/{id}/status  # Update campaign status
+```
+
+### Target Audience APIs
+```
+GET    /api/target-audiences       # List target audiences
+POST   /api/target-audiences       # Create target audience
+GET    /api/target-audiences/{id}  # Get audience details
+PUT    /api/target-audiences/{id}  # Update audience
+DELETE /api/target-audiences/{id}  # Delete audience
+```
+
+### Analytics & Reporting APIs
+```
+GET /api/analytics/dashboard       # Dashboard overview
+GET /api/analytics/campaigns/{id}  # Campaign specific analytics
+GET /api/analytics/export          # Export analytics data
+GET /api/reports/performance       # Performance reports
+GET /api/reports/audience-insights # Audience insights
+```
+
+### Media Management APIs
+```
+GET    /api/media                  # List media files
+POST   /api/media/upload           # Upload media
+GET    /api/media/{id}             # Get media details
+DELETE /api/media/{id}             # Delete media
+```
+
+### Dataset APIs
+```
+GET    /api/datasets               # List datasets
+POST   /api/datasets               # Create dataset
+GET    /api/datasets/{id}          # Get dataset
+PUT    /api/datasets/{id}          # Update dataset
+DELETE /api/datasets/{id}          # Delete dataset
+POST   /api/datasets/import        # Import data
+```
+
+## 4. Model Relationships
+
+```php
+// User Model
+class User extends Authenticatable
+{
+    public function campaigns()
+    {
+        return $this->hasMany(Campaign::class);
+    }
+    
+    public function targetAudiences()
+    {
+        return $this->hasMany(TargetAudience::class);
+    }
+    
+    public function mediaFiles()
+    {
+        return $this->hasMany(MediaLibrary::class);
+    }
+}
+
+// Campaign Model
+class Campaign extends Model
+{
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    public function targetAudience()
+    {
+        return $this->belongsTo(TargetAudience::class);
+    }
+    
+    public function goals()
+    {
+        return $this->hasMany(CampaignGoal::class);
+    }
+    
+    public function contents()
+    {
+        return $this->hasMany(CampaignContent::class);
+    }
+    
+    public function analytics()
+    {
+        return $this->hasMany(CampaignAnalytics::class);
+    }
+}
+```
+
+## 5. Admin Dashboard Backend Requirements
+
+Based on the UI conditions diagram, you'll need:
+
+### Admin Dashboard APIs
+```
+GET /api/admin/dashboard/stats     # System overview stats
+GET /api/admin/users               # User management
+GET /api/admin/campaigns/overview  # All campaigns overview
+GET /api/admin/system/health       # System health metrics
+GET /api/admin/reports/usage       # Usage analytics
+```
+
+### Admin Features
+- User management (create, edit, disable users)
+- Campaign oversight and moderation
+- System analytics and reporting
+- Dataset management (predefined vs custom)
+- Media library management
+- System configuration
+
+## 6. Next.js Frontend Integration
+
+### API Client Setup
+```javascript
+// utils/api.js
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export const apiClient = {
+  auth: {
+    login: (credentials) => post('/auth/login', credentials),
+    register: (userData) => post('/auth/register', userData),
+    logout: () => post('/auth/logout'),
+  },
+  campaigns: {
+    list: () => get('/campaigns'),
+    create: (data) => post('/campaigns', data),
+    update: (id, data) => put(`/campaigns/${id}`, data),
+    delete: (id) => del(`/campaigns/${id}`),
+  },
+  // ... other API methods
+};
+```
+
+## 7. Development Phases
+
+### Phase 1: Foundation
+- Setup Laravel project with authentication
+- Create basic database schema
+- Implement user management
+- Setup API routes and middleware
+
+### Phase 2: Core Features
+- Campaign CRUD operations
+- Target audience management
+- Basic analytics tracking
+- Media upload functionality
+
+### Phase 3: Advanced Features
+- Advanced analytics and reporting
+- Dataset management
+- Admin dashboard
+- Export/import functionality
+
+### Phase 4: Integration & Polish
+- Frontend-backend integration
+- Performance optimization
+- Testing and bug fixes
+- Documentation
+
+## 8. Additional Considerations
+
+### Security
+- JWT authentication
+- Rate limiting
+- Input validation
+- File upload security
+- CORS configuration
+
+### Performance
+- Database indexing
+- Query optimization
+- Caching strategy (Redis)
+- Image optimization
+
+### Scalability
+- Queue system for heavy operations
+- Database connection pooling
+- CDN for media files
+- Load balancing considerations
