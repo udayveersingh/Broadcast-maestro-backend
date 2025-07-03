@@ -373,3 +373,75 @@ export const apiClient = {
 - Database connection pooling
 - CDN for media files
 - Load balancing considerations
+
+
+
+
+php artisan make:request Auth/LoginRequest
+php artisan make:request Auth/RegisterRequest
+
+php artisan make:request Campaign/CreateCampaignRequest.php
+
+
+equests/
+│   │   ├── Campaign/
+│   │   │   ├── CreateCampaignRequest.php
+│   │   │   └── UpdateCampaignRequest.php
+
+php artisan make:migration create_users_table
+php artisan make:resource UserResource
+php artisan make:controller API/AuthController
+
+php artisan make:resource CampaignResource
+
+
+
+1. User & Company Management
+Page	Description
+All Users	View/filter all users (search by role, company, email)
+User Detail	View/edit profile, assign roles, reset password, suspend/delete
+Companies / Organizations	Manage sub-accounts for companies (multi-tenancy), company settings
+Roles & Permissions	Assign roles (admin, manager, creator, etc.) using a role manager
+Invite Users	Admins can invite new users via email and assign them to companies
+
+📊 2. Campaign Oversight
+Page	Description
+All Campaigns	List all campaigns across all companies/users (filter by date, user, etc.)
+Campaign Audit Logs	View creation/edit activity with timestamps & user attribution
+Campaign Detail View	Read-only mode to review structure/content of any campaign
+Flagged Campaigns	View and moderate flagged/abusive campaigns (if needed)
+
+📁 3. Dataset & Configuration Management
+Page	Description
+Tools Management	Manage predefined tools (email, article, poster, etc.)
+Goals Library	CRUD for goal templates used in campaigns
+Target Audience Types	Manage target audience options globally
+Tone of Voice List	CRUD for tone presets
+Deadlines / Schedulers	Manage default scheduling rules or presets
+
+🤖 4. AI & Content System Control
+Page	Description
+AI Prompt Configurations	Admin-defined templates/prompts used to generate content
+AI Logs / Output History	Browse or search generated content for debugging
+Content Moderation	Manually review/edit AI-generated outputs
+Rate Limits / Usage	Control API token limits or prompt frequency per user/company
+
+⚙️ 5. System & App Settings
+Page	Description
+General Settings	Site name, email settings, logos, etc.
+Feature Toggles	Turn on/off features per user or company
+Access Control Rules	Set custom permissions for roles
+System Logs	View Laravel logs, job queue failures, etc.
+Maintenance Mode	Toggle site-wide maintenance mode
+
+📈 6. Reports & Analytics (Optional)
+Page	Description
+User Activity Logs	View login, logout, campaign creation, etc.
+Campaign Performance	Metrics: usage of tools, avg time per campaign, goal types used
+AI Usage Stats	Track token consumption, content requests per company/user
+
+💬 7. Support & Feedback
+Page	Description
+User Feedback	View issues or suggestions from end users
+Support Tickets	Internal support system for bug/feature requests (optional)
+

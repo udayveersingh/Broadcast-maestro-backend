@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::view('/', 'index');
 Route::view('/analytics', 'analytics');
@@ -113,3 +115,17 @@ Route::view('/auth/cover-login', 'auth.cover-login');
 Route::view('/auth/cover-register', 'auth.cover-register');
 Route::view('/auth/cover-lockscreen', 'auth.cover-lockscreen');
 Route::view('/auth/cover-password-reset', 'auth.cover-password-reset');
+
+Route::get('auth/login', [AuthController::class, 'showLoginForm'])->name('auth.login.form');
+Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
+
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('admin.dashboard');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::get('/get-users', [UserController::class, 'get_users'])->name('admin.users.get_users');
+    Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+});
+
