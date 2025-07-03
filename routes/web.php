@@ -3,8 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\UserController;
+use Illuminate\Support\Facades\Auth;
 
-Route::view('/', 'index');
+// Route::view('/', 'index');
 Route::view('/analytics', 'analytics');
 Route::view('/finance', 'finance');
 Route::view('/crypto', 'crypto');
@@ -115,6 +116,23 @@ Route::view('/auth/cover-login', 'auth.cover-login');
 Route::view('/auth/cover-register', 'auth.cover-register');
 Route::view('/auth/cover-lockscreen', 'auth.cover-lockscreen');
 Route::view('/auth/cover-password-reset', 'auth.cover-password-reset');
+
+Route::get('/', function () {
+    if (Auth::check()) {
+        $user = Auth::user();
+
+        // Redirect based on role
+        return match ($user->role) {
+            'admin' => redirect()->route('admin.dashboard'),
+            'manager' => redirect()->route('manager.dashboard'),
+            default => redirect()->route('user.dashboard'),
+        };
+    }
+
+    // Not logged in → send to login page
+    return redirect()->route('auth.login.form');
+});
+
 
 Route::get('auth/login', [AuthController::class, 'showLoginForm'])->name('auth.login.form');
 Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');

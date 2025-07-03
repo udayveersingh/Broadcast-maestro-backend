@@ -37,7 +37,8 @@ class UserController extends Controller
         }
 
         // Set default password for now or handle separately
-        $validated['password'] = bcrypt('default_password');
+        $nameWithoutSpaces = str_replace(' ', '', $request->name);
+        $validated['password'] = bcrypt($nameWithoutSpaces . '123');
 
         $user = User::create($validated);
 

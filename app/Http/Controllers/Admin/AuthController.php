@@ -26,13 +26,13 @@ class AuthController extends Controller
             }
 
             // Role-based redirection
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->role === 'manager') {
-                return redirect()->route('manager.dashboard'); // Make sure this exists
-            } else {
-                return redirect()->route('user.dashboard'); // Or some default user area
-            }
+            $defaultRedirect = match ($user->role) {
+            'admin' => route('admin.dashboard'),
+            'manager' => route('manager.dashboard'),
+            default => route('user.dashboard'),
+        };
+
+        return redirect()->intended($defaultRedirect);
         }
 
         return redirect()->back()->withErrors(['Invalid credentials']);

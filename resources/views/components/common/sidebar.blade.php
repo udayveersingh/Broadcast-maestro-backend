@@ -67,7 +67,7 @@
                 </li>
 
                 <h2
-                    class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
+                    class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1 hidden">
 
                     <svg class="w-4 h-5 flex-none hidden" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"
                         fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -76,7 +76,7 @@
                     <span>Apps</span>
                 </h2>
 
-                <li class="nav-item">
+                <li class="nav-item hidden">
                     <ul>
                         <li class="nav-item">
                             <a href="/apps/chat" class="group">
@@ -281,22 +281,23 @@
                     <a href="/admin/users" class="nav-link group">
                         <div class="flex items-center">
 
-                            <svg class="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24"
+                              <svg class="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24"
                                 fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path opacity="0.5"
-                                    d="M6.22209 4.60105C6.66665 4.304 7.13344 4.04636 7.6171 3.82976C8.98898 3.21539 9.67491 2.9082 10.5875 3.4994C11.5 4.09061 11.5 5.06041 11.5 7.00001V8.50001C11.5 10.3856 11.5 11.3284 12.0858 11.9142C12.6716 12.5 13.6144 12.5 15.5 12.5H17C18.9396 12.5 19.9094 12.5 20.5006 13.4125C21.0918 14.3251 20.7846 15.011 20.1702 16.3829C19.9536 16.8666 19.696 17.3334 19.399 17.7779C18.3551 19.3402 16.8714 20.5578 15.1355 21.2769C13.3996 21.9959 11.4895 22.184 9.64665 21.8175C7.80383 21.4509 6.11109 20.5461 4.78249 19.2175C3.45389 17.8889 2.5491 16.1962 2.18254 14.3534C1.81598 12.5105 2.00412 10.6004 2.72315 8.86451C3.44218 7.12861 4.65982 5.64492 6.22209 4.60105Z"
+                                <circle opacity="0.5" cx="15" cy="6" r="3"
                                     fill="currentColor" />
-                                <path
-                                    d="M21.446 7.06901C20.6342 5.00831 18.9917 3.36579 16.931 2.55398C15.3895 1.94669 14 3.34316 14 5.00002V9.00002C14 9.5523 14.4477 10 15 10H19C20.6569 10 22.0533 8.61055 21.446 7.06901Z"
+                                <ellipse opacity="0.5" cx="16" cy="17" rx="5" ry="3"
+                                    fill="currentColor" />
+                                <circle cx="9.00098" cy="6" r="4" fill="currentColor" />
+                                <ellipse cx="9.00098" cy="17.001" rx="7" ry="4"
                                     fill="currentColor" />
                             </svg>
                             <span
-                                class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">ALL Users</span>
+                                class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Users</span>
                         </div>
                     </a>
                 </li>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <button type="button" class="nav-link group"
                         :class="{ 'active': activeDropdown === 'components' }"
                         @click="activeDropdown === 'components' ? activeDropdown = null : activeDropdown = 'components'">
@@ -372,7 +373,7 @@
                     </ul>
                 </li>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <button type="button" class="nav-link group" :class="{ 'active': activeDropdown === 'elements' }"
                         @click="activeDropdown === 'elements' ? activeDropdown = null : activeDropdown = 'elements'">
                         <div class="flex items-center">
@@ -455,7 +456,7 @@
                     </ul>
                 </li>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <a href="/charts" class="nav-link group">
                         <div class="flex items-center">
 
@@ -474,7 +475,7 @@
                     </a>
                 </li>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <a href="/widgets" class="nav-link group">
                         <div class="flex items-center">
 
@@ -499,7 +500,7 @@
                     </a>
                 </li>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <a href="/font-icons" class="nav-link group">
                         <div class="flex items-center">
 
@@ -519,7 +520,7 @@
                     </a>
                 </li>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <a href="/dragndrop" class="nav-link group">
                         <div class="flex items-center">
 
@@ -550,7 +551,7 @@
 
 
                 <h2
-                    class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
+                    class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1 hidden">
 
                     <svg class="w-4 h-5 flex-none hidden" viewBox="0 0 24 24" stroke="currentColor"
                         stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -559,7 +560,7 @@
                     <span>TABLES AND FORMS</span>
                 </h2>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <a href="/tables" class="nav-link group">
                         <div class="flex items-center">
 
@@ -584,7 +585,7 @@
                     </a>
                 </li>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <button type="button" class="nav-link group"
                         :class=" { 'active': activeDropdown === 'datatables' }"
                         @click="activeDropdown === 'datatables' ? activeDropdown = null : activeDropdown = 'datatables'">
@@ -662,7 +663,7 @@
                     </ul>
                 </li>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <button type="button" class="nav-link group" :class="{ 'active': activeDropdown === 'forms' }"
                         @click="activeDropdown === 'forms' ? activeDropdown = null : activeDropdown = 'forms'">
                         <div class="flex items-center">
@@ -744,7 +745,7 @@
                 </li>
 
                 <h2
-                    class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
+                    class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1 hidden">
 
                     <svg class="w-4 h-5 flex-none hidden" viewBox="0 0 24 24" stroke="currentColor"
                         stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -753,7 +754,7 @@
                     <span>USER AND PAGES</span>
                 </h2>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <button type="button" class="nav-link group" :class="{ 'active': activeDropdown === 'users' }"
                         @click="activeDropdown === 'users' ? activeDropdown = null : activeDropdown = 'users'">
                         <div class="flex items-center">
@@ -789,7 +790,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <button type="button" class="nav-link group" :class="{ 'active': activeDropdown === 'pages' }"
                         @click="activeDropdown === 'pages' ? activeDropdown = null : activeDropdown = 'pages'">
                         <div class="flex items-center">
@@ -876,7 +877,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <button type="button" class="nav-link group"
                         :class="{ 'active': activeDropdown === 'authentication' }"
                         @click="activeDropdown === 'authentication' ? activeDropdown = null : activeDropdown = 'authentication'">
@@ -944,7 +945,7 @@
 
 
                 <h2
-                    class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
+                    class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1 hidden">
 
                     <svg class="w-4 h-5 flex-none hidden" viewBox="0 0 24 24" stroke="currentColor"
                         stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -953,7 +954,7 @@
                     <span>SUPPORTS</span>
                 </h2>
 
-                <li class="menu nav-item">
+                <li class="menu nav-item hidden">
                     <a href="https://vristo.sbthemes.com" target="_blank" class="nav-link group">
                         <div class="flex items-center">
 
