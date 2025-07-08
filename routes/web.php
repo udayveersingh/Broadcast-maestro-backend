@@ -149,5 +149,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('admin.campaigns.index');
     Route::get('/get-campaigns', [CampaignController::class, 'get_campaigns'])->name('admin.campaigns.get_campaigns');
+    Route::get('/campaign/edit/{id}', [CampaignController::class, 'edit'])->name('admin.campaigns.edit');
 });
 

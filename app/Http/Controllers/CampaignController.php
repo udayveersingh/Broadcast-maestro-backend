@@ -60,4 +60,10 @@ class CampaignController extends Controller
         return response()->json($query->latest()->paginate(10));
     }
 
+    public function edit($id)
+    {
+        $campaign = Campaign::with('user')->findOrFail($id);
+        return view('admin.campaigns.edit', compact('campaign'));
+    }
+
 }
