@@ -942,6 +942,33 @@
                     </ul>
                 </li>
 
+                 <h2
+                    class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
+
+                    <svg class="w-4 h-5 flex-none hidden" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Campaign Oversight</span>
+                </h2>
+
+                 <li class="menu nav-item">
+                    <a href="/admin/campaigns" class="nav-link group">
+                        <div class="flex items-center">
+
+                              <svg class="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path opacity="0.5" d="M4 5H14V9L19 5V19L14 15V19H4V5Z" fill="currentColor" />
+                            <circle cx="19" cy="5" r="1" fill="currentColor" />
+                            <circle cx="19" cy="19" r="1" fill="currentColor" />
+                            </svg>
+
+                            <span
+                                class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Campaign</span>
+                        </div>
+                    </a>
+                </li>
+
 
 
                 <h2

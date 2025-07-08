@@ -29,6 +29,13 @@ class Campaign extends Model
         return $this->belongsToMany(MediaLibrary::class, 'campaign_media');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+
+
 
 
 

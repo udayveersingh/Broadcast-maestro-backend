@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\CampaignController;
 use Illuminate\Support\Facades\Auth;
 
 // Route::view('/', 'index');
@@ -145,5 +146,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/get-users', [UserController::class, 'get_users'])->name('admin.users.get_users');
     Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+
+    Route::get('/campaigns', [CampaignController::class, 'index'])->name('admin.campaigns.index');
+    Route::get('/get-campaigns', [CampaignController::class, 'get_campaigns'])->name('admin.campaigns.get_campaigns');
 });
 

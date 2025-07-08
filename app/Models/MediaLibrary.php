@@ -19,4 +19,10 @@ class MediaLibrary extends Model
         'alt_text',
     ];
 
+    public function campaigns()
+    {
+        return $this->belongsToMany(Campaign::class, 'campaign_media', 'media_library_id', 'campaign_id');
+    }
+
+
 }
