@@ -11,11 +11,58 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Info(title="API Documentation", version="1.0")
+ */
 class AuthController extends Controller
 {
     /**
      * Register a new user
+     */
+
+    /**
+     * @OA\Post(
+     *     path="/api/auth/register",
+     *     tags={"Auth"},
+     *     summary="Register a new user",
+     *     description="Creates a new user account and returns an auth token.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "email", "password"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="secret123"),
+     *             @OA\Property(property="role", type="string", example="user")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="User registered successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="User registered successfully"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="user", type="object"),
+     *                 @OA\Property(property="token", type="string", example="token_abc123"),
+     *                 @OA\Property(property="token_type", type="string", example="Bearer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Registration failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Registration failed"),
+     *             @OA\Property(property="error", type="string", example="Something went wrong")
+     *         )
+     *     )
+     * )
      */
     public function register(RegisterRequest $request)
     {
@@ -49,7 +96,65 @@ class AuthController extends Controller
     }
 
     /**
-     * Login user
+     * @OA\Post(
+     *     path="/api/auth/login",
+     *     tags={"Auth"},
+     *     summary="User login",
+     *     description="Authenticates a user and returns a Bearer token.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="secret123"),
+     *             @OA\Property(property="remember", type="boolean", example=false)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Login successful"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="user", type="object"),  
+     *                 @OA\Property(property="token", type="string", example="token_abc123"),
+     *                 @OA\Property(property="token_type", type="string", example="Bearer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Account is deactivated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Your account has been deactivated. Please contact support.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation errors",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Login failed"),
+     *             @OA\Property(property="errors", type="object",
+     *                 @OA\Property(property="email", type="array", @OA\Items(type="string", example="No account found with this email address.")),
+     *                 @OA\Property(property="password", type="array", @OA\Items(type="string", example="The provided password is incorrect."))
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="An error occurred during login"),
+     *             @OA\Property(property="error", type="string", example="Unexpected exception")
+     *         )
+     *     )
+     * )
      */
     public function login(LoginRequest $request)
     {
@@ -185,7 +290,30 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout user
+     * @OA\Post(
+     *     path="/api/auth/logout",
+     *     tags={"Auth"},
+     *     summary="Logout current user",
+     *     description="Deletes the current user's access token (logout only from current device).",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logged out successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Logged out successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Logout failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Logout failed"),
+     *             @OA\Property(property="error", type="string", example="Something went wrong")
+     *         )
+     *     )
+     * )
      */
     public function logout(Request $request)
     {
@@ -231,7 +359,37 @@ class AuthController extends Controller
     }
 
     /**
-     * Refresh token
+     * @OA\Post(
+     *     path="/api/auth/refresh",
+     *     tags={"Auth"},
+     *     summary="Refresh authentication token",
+     *     description="Deletes the current token and issues a new access token for the authenticated user.",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Token refreshed successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Token refreshed successfully"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="user", type="object"),  
+     *                 @OA\Property(property="token", type="string", example="new_token_abc123"),
+     *                 @OA\Property(property="token_type", type="string", example="Bearer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Token refresh failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Token refresh failed"),
+     *             @OA\Property(property="error", type="string", example="Something went wrong")
+     *         )
+     *     )
+     * )
      */
     public function refresh(Request $request)
     {

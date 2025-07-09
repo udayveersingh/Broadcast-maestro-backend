@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CampaignController;
 use App\Http\Controllers\API\GoalController;
+use App\Http\Controllers\Api\ProfileApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,12 +21,17 @@ Route::prefix('auth')->group(function () {
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('auth')->group(function () {
-        Route::get('profile', [AuthController::class, 'profile']);
-        Route::put('profile', [AuthController::class, 'updateProfile']);
+        // Route::get('profile', [AuthController::class, 'profile']);
+        // Route::put('profile', [AuthController::class, 'updateProfile']);
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('logout-all', [AuthController::class, 'logoutAll']);
         Route::post('refresh', [AuthController::class, 'refresh']);
-        
+
+
+
+        Route::get('/profile', [ProfileApiController::class, 'show']);
+        Route::post('/profile', [ProfileApiController::class, 'update']);
+
     });
 
 
