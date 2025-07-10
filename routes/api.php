@@ -5,6 +5,9 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CampaignController;
 use App\Http\Controllers\API\GoalController;
 use App\Http\Controllers\Api\ProfileApiController;
+use App\Http\Controllers\API\TargetAudienceController;
+use App\Http\Controllers\Api\ToolController;
+use App\Http\Controllers\Api\ToolParameterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,15 +30,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout-all', [AuthController::class, 'logoutAll']);
         Route::post('refresh', [AuthController::class, 'refresh']);
 
-
-
         Route::get('/profile', [ProfileApiController::class, 'show']);
         Route::post('/profile', [ProfileApiController::class, 'update']);
-
     });
-
 
     Route::post('/campaigns', [CampaignController::class, 'store']);
     Route::get('/goals', [GoalController::class, 'index']);
-
+    Route::get('/target-audiences', [TargetAudienceController::class, 'index']);
+    Route::get('/tools', [ToolController::class, 'index']);
 });

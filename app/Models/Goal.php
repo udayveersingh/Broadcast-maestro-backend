@@ -14,4 +14,10 @@ class Goal extends Model
         return $this->belongsToMany(Campaign::class, 'campaign_goal');
     }
 
+    public function tools()
+    {
+        return $this->belongsToMany(Tool::class);
+    }
+
+
 }

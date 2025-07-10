@@ -11,8 +11,10 @@ class GoalSeeder extends Seeder
     {
         $goals = [
             ['name' => 'Inform'],
-            ['name' => 'Raise awareness'],
-            ['name' => 'Influence behavior'],
+            // ['name' => 'Raise awareness'],
+            // ['name' => 'Influence behavior'],
+            ['name' => 'Activate'],
+            ['name' => 'Event'],
         ];
 
         foreach ($goals as $goal) {

@@ -517,6 +517,49 @@
                 ]
             }
         },
+        "/api/goals": {
+            "get": {
+                "tags": [
+                    "Goals"
+                ],
+                "summary": "List available goals",
+                "description": "Returns a list of all goals (id and name).",
+                "operationId": "374c85f6e9b1e1519970cbde13cf029e",
+                "responses": {
+                    "200": {
+                        "description": "List of goals",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Increase Website Traffic"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/auth/profile": {
             "get": {
                 "tags": [
@@ -711,6 +754,124 @@
                     }
                 ]
             }
+        },
+        "/api/target-audiences": {
+            "get": {
+                "tags": [
+                    "Target Audiences"
+                ],
+                "summary": "List target audiences",
+                "description": "Returns a list of all target audiences (id and name).",
+                "operationId": "49dfafc6286891bc2c587f9b4d7f777a",
+                "responses": {
+                    "200": {
+                        "description": "List of target audiences",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Young Professionals"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/tools": {
+            "get": {
+                "tags": [
+                    "Tools"
+                ],
+                "summary": "List available tools",
+                "description": "Returns a list of tools, optionally filtered by goal name.",
+                "operationId": "9762134a355a7031b625716318501cfd",
+                "parameters": [
+                    {
+                        "name": "goal",
+                        "in": "query",
+                        "description": "Filter tools by associated goal name",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Increase Website Traffic"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of tools",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Google Ads"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Advertising tool for online visibility."
+                                            },
+                                            "goals": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Increase Website Traffic"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     },
     "tags": [
@@ -723,8 +884,20 @@
             "description": "Campaigns"
         },
         {
+            "name": "Goals",
+            "description": "Goals"
+        },
+        {
             "name": "Profile",
             "description": "Profile"
+        },
+        {
+            "name": "Target Audiences",
+            "description": "Target Audiences"
+        },
+        {
+            "name": "Tools",
+            "description": "Tools"
         }
     ]
 }

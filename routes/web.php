@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\GoalController;
+use App\Http\Controllers\Admin\ToolController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CampaignController;
 use Illuminate\Support\Facades\Auth;
@@ -138,7 +140,6 @@ Route::get('/', function () {
 Route::get('auth/login', [AuthController::class, 'showLoginForm'])->name('auth.login.form');
 Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
 
-
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
@@ -150,5 +151,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('admin.campaigns.index');
     Route::get('/get-campaigns', [CampaignController::class, 'get_campaigns'])->name('admin.campaigns.get_campaigns');
     Route::get('/campaign/edit/{id}', [CampaignController::class, 'edit'])->name('admin.campaigns.edit');
+
+    Route::get('/tools', [ToolController::class, 'index'])->name('admin.tools.index');
+    Route::get('/get-tools', [ToolController::class, 'get_tools'])->name('admin.tools.get_tools');
+    Route::get('/get-goals', [GoalController::class, 'get_goals'])->name('admin.tools.get_goals');
+    Route::put('/tools/{tool}', [ToolController::class, 'update'])->name('admin.tools.update');
+    Route::post('/tools', [ToolController::class, 'store'])->name('admin.tools.store');
+    Route::delete('/tools/{tool}', [ToolController::class, 'destroy'])->name('admin.tools.destroy');
 });
 
