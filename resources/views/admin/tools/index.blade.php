@@ -223,6 +223,41 @@
                             </template>
                         </tbody>
                     </table>
+
+                    <div class="flex justify-end mt-6 items-center space-x-4" x-show="pagination.last_page > 1">
+                        <!-- Total Records -->
+                        <div class="text-sm text-gray-500" x-text="`Total records: ${pagination.total}`"></div>
+
+                        <!-- Previous Button -->
+                        <button
+                            class="px-4 py-2 rounded-lg border text-sm font-medium transition-all duration-200 hover:bg-gray-100 disabled:opacity-50"
+                            :disabled="!pagination.prev_page_url"
+                            @click="fetchContacts(pagination.current_page - 1)">
+                            Previous
+                        </button>
+
+                        <!-- Page Numbers -->
+                        <template x-for="page in pagination.last_page" :key="page">
+                            <button
+                                class="px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
+                                :class="{
+                                    'bg-blue-600 text-white shadow-md': page === pagination.current_page,
+                                    'border border-gray-300 text-gray-700 hover:bg-gray-100': page !== pagination.current_page
+                                }"
+                                @click="fetchContacts(page)"
+                                x-text="page">
+                            </button>
+                        </template>
+
+                        <!-- Next Button -->
+                        <button
+                            class="px-4 py-2 rounded-lg border text-sm font-medium transition-all duration-200 hover:bg-gray-100 disabled:opacity-50"
+                            :disabled="!pagination.next_page_url"
+                            @click="fetchContacts(pagination.current_page + 1)">
+                            Next
+                        </button>
+                    </div>
+
                 </div>
             </template>
         </div>
@@ -378,18 +413,35 @@
         location: '',
         goal_ids: [],
     },
+    pagination: {
+        current_page: 1,
+        last_page: 1,
+        next_page_url: null,
+        prev_page_url: null,
+        links: [],
+        total: 0,
+    },
 
     init() {
         this.fetchContacts();
          this.fetchGoals();
     },
 
-    async fetchContacts() {
+    async fetchContacts(page = 1) {
         this.loading = true;
         try {
-            const response = await fetch("/admin/get-tools"); // your Laravel API route
+            const response = await fetch(`/admin/get-tools?page=${page}`); // your Laravel API route
             const data = await response.json();
             this.contactList = data.tools.data || data;// assuming JSON returns { users: [...] }
+            this.pagination = {
+                current_page: data.tools.current_page,
+                last_page: data.tools.last_page,
+                next_page_url: data.tools.next_page_url,
+                prev_page_url: data.tools.prev_page_url,
+                links: data.tools.links,
+                total: data.tools.total,
+            };
+            console.log("checking pagination now", this.pagination);
             this.searchContacts();
         } catch (error) {
             this.showMessage("Failed to load users", "error");

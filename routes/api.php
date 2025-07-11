@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/profile', [ProfileApiController::class, 'update']);
     });
 
+    Route::get('/campaigns', [CampaignController::class, 'index']);
     Route::post('/campaigns', [CampaignController::class, 'store']);
     Route::get('/goals', [GoalController::class, 'index']);
     Route::get('/target-audiences', [TargetAudienceController::class, 'index']);

@@ -417,7 +417,7 @@
                     "Campaigns"
                 ],
                 "summary": "Create a new campaign",
-                "description": "Creates a campaign with related goals, target audiences, and media file uploads.",
+                "description": "Creates a campaign with optional goal, target audience, and media files (single or multiple).",
                 "operationId": "df83da8c55aaa4644a266041a1822371",
                 "requestBody": {
                     "required": true,
@@ -429,51 +429,56 @@
                                     "type",
                                     "start_date",
                                     "end_date",
-                                    "budget"
+                                    "budget",
+                                    "status"
                                 ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
-                                        "example": "Diwali Campaign"
+                                        "example": "New Year Campaign"
                                     },
                                     "description": {
                                         "type": "string",
-                                        "example": "Promote Diwali offers"
+                                        "example": "Promote New Year offers"
                                     },
                                     "type": {
                                         "type": "string",
-                                        "example": "Email"
+                                        "example": "Social Media"
                                     },
                                     "start_date": {
                                         "type": "string",
                                         "format": "date",
-                                        "example": "2025-10-01"
+                                        "example": "2025-12-25"
                                     },
                                     "end_date": {
                                         "type": "string",
                                         "format": "date",
-                                        "example": "2025-10-31"
+                                        "example": "2026-01-10"
                                     },
                                     "budget": {
                                         "type": "number",
                                         "format": "float",
-                                        "example": 5000
+                                        "example": 10000
                                     },
-                                    "goal_ids": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer",
-                                            "example": 1
-                                        }
+                                    "status": {
+                                        "type": "string",
+                                        "example": "draft"
                                     },
-                                    "target_audience_ids": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer",
-                                            "example": 2
-                                        }
+                                    "goal_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "target_audience_id": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "media_file": {
+                                        "description": "Single media file upload",
+                                        "type": "string",
+                                        "format": "binary"
                                     },
                                     "media_files": {
+                                        "description": "Multiple media file uploads",
                                         "type": "array",
                                         "items": {
                                             "type": "string",
@@ -494,7 +499,7 @@
                                 "schema": {
                                     "properties": {
                                         "data": {
-                                            "description": "Created campaign resource",
+                                            "description": "Campaign resource with goals, target audiences, and media",
                                             "type": "object"
                                         }
                                     },
@@ -504,7 +509,7 @@
                         }
                     },
                     "422": {
-                        "description": "Validation failed"
+                        "description": "Validation error"
                     },
                     "500": {
                         "description": "Server error"

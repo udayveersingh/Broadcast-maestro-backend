@@ -17,6 +17,7 @@ class ToolController extends Controller
     {
         // Fetch tools from the database, possibly with pagination
         // $tools = Tool::paginate(10);
+        $page = $request->query('page', 1);
         $goal = $request->query('goal');
 
         $tools = Tool::with('goals')
@@ -24,7 +25,7 @@ class ToolController extends Controller
                 $query->whereHas('goals', function ($q) use ($goal) {
                     $q->where('name', $goal);
                 });
-            })->paginate(20);
+            })->paginate(10, ['*'], 'page', $page);
 
         return response()->json([
             'tools' => $tools

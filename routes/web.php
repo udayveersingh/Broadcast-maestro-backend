@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\GoalController;
+use App\Http\Controllers\Admin\TargetAudienceController;
 use App\Http\Controllers\Admin\ToolController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CampaignController;
@@ -149,8 +150,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
 
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('admin.campaigns.index');
+    Route::put('/campaigns/{id}', [CampaignController::class, 'update'])->name('admin.campaigns.update');
     Route::get('/get-campaigns', [CampaignController::class, 'get_campaigns'])->name('admin.campaigns.get_campaigns');
     Route::get('/campaign/edit/{id}', [CampaignController::class, 'edit'])->name('admin.campaigns.edit');
+    Route::post('/campaigns', [CampaignController::class, 'store'])->name('admin.campaigns.store');
+    Route::delete('/campaigns/{id}', [CampaignController::class, 'destroy'])->name('admin.campaigns.destroy');
 
     Route::get('/tools', [ToolController::class, 'index'])->name('admin.tools.index');
     Route::get('/get-tools', [ToolController::class, 'get_tools'])->name('admin.tools.get_tools');
@@ -158,5 +162,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::put('/tools/{tool}', [ToolController::class, 'update'])->name('admin.tools.update');
     Route::post('/tools', [ToolController::class, 'store'])->name('admin.tools.store');
     Route::delete('/tools/{tool}', [ToolController::class, 'destroy'])->name('admin.tools.destroy');
+    Route::get('/get-target-audiences', [TargetAudienceController::class, 'index'])->name('admin.target-audiences.index');
 });
 

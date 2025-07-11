@@ -59,7 +59,7 @@ class ToolController extends Controller
                 $query->whereHas('goals', function ($q) use ($goal) {
                     $q->where('name', $goal);
                 });
-            })->get();
+            })->paginate(5);
 
         return response()->json($tools);
     }
