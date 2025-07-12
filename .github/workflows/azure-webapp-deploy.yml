@@ -1,0 +1,87 @@
+name: Deploy to Azure Web App
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: maestro-be  # Replace with your Azure Web App name
+  NODE_VERSION: '18.x'
+  PHP_VERSION: '8.4'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install Node.js dependencies
+      run: npm ci
+      
+    - name: Build frontend assets
+      run: npm run build
+      
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ env.PHP_VERSION }}
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip, gd, redis
+        tools: composer:v2
+        
+    - name: Install PHP dependencies
+      run: composer install --no-dev --optimize-autoloader
+      
+    - name: Create .env file
+      run: |
+        if [ ! -f .env ]; then
+          cp .env.example .env 2>/dev/null || echo "APP_NAME=Laravel" > .env
+        fi
+        
+    - name: Generate application key
+      run: php artisan key:generate --no-interaction || true
+      
+    - name: Optimize for production
+      run: |
+        php artisan config:cache
+        php artisan route:cache
+        php artisan view:cache
+        
+    - name: Prepare deployment package for Azure Linux Web App
+      run: |
+        # Create deployment directory
+        mkdir -p deployment
+        
+        # Copy Laravel core files to deployment
+        cp -r app bootstrap config database resources routes storage vendor default deployment/
+        cp artisan composer.json composer.lock .env deployment/
+        
+        # Copy public folder contents to root of deployment
+        cp -r public/* deployment/
+        
+        # Create zip package
+        cd deployment
+        zip -r ../deployment.zip .
+        
+    - name: Deploy to Azure Web App using Publish Profile
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        package: deployment.zip
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        
+    - name: Verify deployment
+      run: |
+        echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "**Web App:** ${{ env.AZURE_WEBAPP_NAME }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Status:** Success" >> $GITHUB_STEP_SUMMARY
+        echo "**Package:** deployment.zip (public folder as root, Linux App Service)" >> $GITHUB_STEP_SUMMARY
+        echo "**Note:** index.php paths fixed for Linux App Service" >> $GITHUB_STEP_SUMMARY
