@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Socialite\Facades\Socialite;
 use OpenApi\Annotations as OA;
 
 /**
@@ -419,6 +420,68 @@ class AuthController extends Controller
                 'message' => 'Token refresh failed',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function googleLogin(Request $request)
+    {
+        // dd(get_class_methods(Socialite::driver('google')));
+        $request->validate([
+            'token' => 'required|string',
+        ]);
+
+        try {
+            // Socialite 5.x - stateless() method removed
+            $googleUser = Socialite::driver('google')->userFromToken($request->token);
+
+            // Optional: Verify the token is valid
+            if (!$googleUser->getId()) {
+                throw new \Exception('Invalid Google user data');
+            }
+
+            // Check if user exists with improved error handling
+            $user = User::firstOrCreate(
+                ['email' => $googleUser->getEmail()],
+                [
+                    'name' => $googleUser->getName(),
+                    'last_name' => '', // Google API might not split names
+                    'avatar' => $googleUser->getAvatar(),
+                    'password' => bcrypt(Str::random(16)),
+                    'email_verified_at' => now(),
+                    'status' => 'active',
+                ]
+            );
+
+            // Laravel 11 token creation with expiration
+            $token = $user->createToken(
+                name: 'auth_token',
+                abilities: ['*'],
+                expiresAt: now()->addDays(30)
+            )->plainTextToken;
+
+            return response()->json([
+                'token' => $token,
+                'user' => $user->only(['id', 'name', 'email', 'avatar', 'status']), // Only return needed fields
+                'token_type' => 'Bearer',
+                'expires_at' => now()->addDays(30)->toISOString()
+            ]);
+
+        } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
+            return response()->json([
+                'error' => 'Invalid Google token',
+                'message' => 'The provided token is invalid or expired'
+            ], 401);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Google authentication failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'error' => 'Google authentication failed',
+                'message' => 'Authentication service temporarily unavailable'
+            ], 401);
         }
     }
 }
