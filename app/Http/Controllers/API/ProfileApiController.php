@@ -49,6 +49,7 @@ class ProfileApiController extends Controller
         return response()->json([
             'id' => $user->id,
             'name' => $user->name,
+            'last_name' => $user->last_name,
             'email' => $user->email,
             'avatar' => $user->avatar ? asset('storage/' . $user->avatar) : null,
             'role' => $user->role,
@@ -104,6 +105,9 @@ class ProfileApiController extends Controller
     public function update(Request $request)
     {
         $data = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:users,email,' . $request->user()->id,
             'phone' => 'nullable|string',
             'organization' => 'nullable|string',
             'department' => 'nullable|string',
@@ -118,18 +122,37 @@ class ProfileApiController extends Controller
 
         $user = $request->user();
 
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->store('avatars', 'public'); // stored in storage/app/public/avatars
-            $user->avatar = $avatarPath;
-            $user->save();
+        if (isset($data['name'])) {
+            $user->name = $data['name'];
         }
 
-        $profile = $request->user()->profile()->updateOrCreate(
-            ['user_id' => $request->user()->id],
-            $data
+        if (isset($data['last_name'])) {
+            $user->last_name = $data['last_name'];
+        }
+
+        if (isset($data['email'])) {
+            $user->email = $data['email'];
+        }
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath;
+        }
+
+        $user->save();
+
+        $profileData = collect($data)->except(['name', 'last_name', 'email'])->toArray();
+
+        $profile = $user->profile()->updateOrCreate(
+            ['user_id' => $user->id],
+            $profileData
         );
 
-        return response()->json(['message' => 'Profile updated successfully', 'profile' => $profile]);
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user,
+            'profile' => $profile
+        ]);
     }
 
 }
