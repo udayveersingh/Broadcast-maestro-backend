@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/profile', [ProfileApiController::class, 'show']);
         Route::post('/profile', [ProfileApiController::class, 'update']);
+        Route::post('/change-password', [AuthController::class, 'changePassword']);
     });
 
     Route::get('/campaigns', [CampaignController::class, 'index']);

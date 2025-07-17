@@ -4,6 +4,9 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Handler extends ExceptionHandler
 {
@@ -47,4 +50,31 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $exception)
+    {
+        // Force JSON for API calls
+        if ($request->expectsJson() || $request->is('api/*')) {
+            // Validation error handling
+            if ($exception instanceof ValidationException) {
+                return response()->json([
+                    'message' => 'Validation error',
+                    'errors' => $exception->errors(),
+                ], 422);
+            }
+
+            // Generic error response
+            $status = ($exception instanceof HttpExceptionInterface)
+                ? $exception->getStatusCode()
+                : 500;
+
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'trace' => config('app.debug') ? $exception->getTrace() : [],
+            ], $status);
+        }
+
+        return parent::render($request, $exception);
+    }
+
 }
