@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ProfileApiController;
 use App\Http\Controllers\API\TargetAudienceController;
 use App\Http\Controllers\Api\ToolController;
 use App\Http\Controllers\Api\ToolParameterController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,12 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::post('social-login/google', [AuthController::class, 'googleLogin']);
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
+    Route::post('/reset-password', [ForgotPasswordController::class, 'reset']);
+
+    Route::post('/send-reset-code', [ForgotPasswordController::class, 'sendResetCode']);
+    Route::post('/reset-password-with-code', [ForgotPasswordController::class, 'resetWithCode']);
+
 });
 
 // Protected routes
