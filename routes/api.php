@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('refresh', [AuthController::class, 'refresh']);
 
         Route::get('/profile', [ProfileApiController::class, 'show']);
+        Route::get('/full-profile', [ProfileApiController::class, 'show_full_profile']);
         Route::post('/profile', [ProfileApiController::class, 'update']);
         Route::post('/change-password', [AuthController::class, 'changePassword']);
     });

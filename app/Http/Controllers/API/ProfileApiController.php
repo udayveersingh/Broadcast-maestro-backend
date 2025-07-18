@@ -58,6 +58,40 @@ class ProfileApiController extends Controller
         ]);
     }
 
+    public function show_full_profile(Request $request)
+    {
+        try {
+            $user = $request->user()->load('profile');
+
+            return response()->json([
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar ? asset('storage/' . $user->avatar) : null,
+                    'photo_visibility' => $user->photo_visibility,
+                ],
+                'profile' => [
+                    'phone' => $user->profile->phone ?? null,
+                    'organization' => $user->profile->organization ?? null,
+                    'department' => $user->profile->department ?? null,
+                    'country' => $user->profile->country ?? null,
+                    'state' => $user->profile->state ?? null,
+                    'city' => $user->profile->city ?? null,
+                    'address' => $user->profile->address ?? null,
+                    'zip_code' => $user->profile->zip_code ?? null,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to retrieve profile.',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 
     /**
      * @OA\Post(
