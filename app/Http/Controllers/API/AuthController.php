@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 use OpenApi\Annotations as OA;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 /**
  * @OA\Info(title="API Documentation", version="1.0")
@@ -423,67 +425,274 @@ class AuthController extends Controller
         }
     }
 
-    public function googleLogin(Request $request)
-    {
-        // dd(get_class_methods(Socialite::driver('google')));
-        $request->validate([
-            'token' => 'required|string',
-        ]);
+    // public function googleLogin(Request $request)
+    // {
+    //     $setCorsHeaders = function($response) {
+    //         $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:5173');
+    //         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    //         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    //         return $response;
+    //     };
 
-        try {
-            // Socialite 5.x - stateless() method removed
-            $googleUser = Socialite::driver('google')->userFromToken($request->token);
+    //     $request->validate([
+    //         'token' => 'required|string',
+    //     ]);
+        
+    //     try {
+    //         // Return token as response first
+    //         // $response = response()->json(['token' => $request->token]);
 
-            // Optional: Verify the token is valid
-            if (!$googleUser->getId()) {
-                throw new \Exception('Invalid Google user data');
-            }
+    //         // Socialite 5.x - stateless() method removed
+    //         $googleUser = Socialite::driver('google')->userFromToken($request->token);
 
-            // Check if user exists with improved error handling
-            $user = User::firstOrCreate(
-                ['email' => $googleUser->getEmail()],
-                [
-                    'name' => $googleUser->getName(),
-                    'last_name' => '', // Google API might not split names
-                    'avatar' => $googleUser->getAvatar(),
-                    'password' => bcrypt(Str::random(16)),
-                    'email_verified_at' => now(),
-                    'status' => 'active',
-                ]
-            );
+    //          $response = response()->json(['userdata' => $googleUser]);
 
-            // Laravel 11 token creation with expiration
-            $token = $user->createToken(
-                name: 'auth_token',
-                abilities: ['*'],
-                expiresAt: now()->addDays(30)
-            )->plainTextToken;
+    //           return $setCorsHeaders($response);
 
-            return response()->json([
-                'token' => $token,
-                'user' => $user->only(['id', 'name', 'email', 'avatar', 'status']), // Only return needed fields
-                'token_type' => 'Bearer',
-                'expires_at' => now()->addDays(30)->toISOString()
-            ]);
+    //         // Optional: Verify the token is valid
+    //         if (!$googleUser->getId()) {
+    //             throw new \Exception('Invalid Google user data');
+    //         }
 
-        } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
+    //         // Check if user exists with improved error handling
+    //         $user = User::firstOrCreate(
+    //             ['email' => $googleUser->getEmail()],
+    //             [
+    //                 'name' => $googleUser->getName(),
+    //                 'last_name' => '', // Google API might not split names
+    //                 'avatar' => $googleUser->getAvatar(),
+    //                 'password' => bcrypt(Str::random(16)),
+    //                 'email_verified_at' => now(),
+    //                 'status' => 'active',
+    //             ]
+    //         );
+
+    //         // Laravel 11 token creation with expiration
+    //         $token = $user->createToken(
+    //             name: 'auth_token',
+    //             abilities: ['*'],
+    //             expiresAt: now()->addDays(30)
+    //         )->plainTextToken;
+
+    //         return response()->json([
+    //             'token' => $token,
+    //             'user' => $user->only(['id', 'name', 'email', 'avatar', 'status']), // Only return needed fields
+    //             'token_type' => 'Bearer',
+    //             'expires_at' => now()->addDays(30)->toISOString()
+    //         ]);
+
+    //     } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
+    //         return response()->json([
+    //             'error' => 'Invalid Google token',
+    //             'message' => 'The provided token is invalid or expired'
+    //         ], 401);
+    //     } catch (\Exception $e) {
+    //         // Log the error for debugging
+    //         \Log::error('Google authentication failed', [
+    //             'error' => $e->getMessage(),
+    //             'trace' => $e->getTraceAsString()
+    //         ]);
+
+    //         return response()->json([
+    //             'error' => 'Google authentication failed',
+    //             'message' => $e->getMessage()
+    //         ], 401);
+    //     }
+    // }
+
+ public function googleLogin(Request $request)
+{
+    // $setCorsHeaders = function($response) {
+    //     $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:5173');
+    //     $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    //     $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    //     return $response;
+    // };
+
+    $request->validate([
+        'token' => 'required|string',
+    ]);
+
+    // dd("token value ======", $request->token);
+    
+    try {
+        // Decode the JWT ID token from Google One Tap
+        $googleUser = $this->verifyGoogleIdToken($request->token);
+        
+        if (!$googleUser) {
+            // return $setCorsHeaders(response()->json([
             return response()->json([
                 'error' => 'Invalid Google token',
                 'message' => 'The provided token is invalid or expired'
             ], 401);
-        } catch (\Exception $e) {
-            // Log the error for debugging
-            \Log::error('Google authentication failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return response()->json([
-                'error' => 'Google authentication failed',
-                'message' => 'Authentication service temporarily unavailable'
-            ], 401);
         }
+
+        // Check if user exists with improved error handling
+        $user = User::firstOrCreate(
+            ['email' => $googleUser['email']],
+            [
+                'name' => $googleUser['name'],
+                'last_name' => $googleUser['family_name'] ?? '',
+                'avatar' => $googleUser['picture'] ?? '',
+                'password' => bcrypt(Str::random(16)),
+                'email_verified_at' => now(),
+                'status' => 'active',
+            ]
+        );
+
+        // Laravel 11 token creation with expiration
+        $tokenName = 'auth_token_' . now()->timestamp;
+        $token = $user->createToken(
+            name: $tokenName,
+            abilities: ['*'],
+            expiresAt: now()->addDays(30)
+        )->plainTextToken;
+
+        $response = response()->json([
+            'success' => true,
+            'message' => 'Google login successful',
+            'data' => [
+                'user' => new UserResource($user),
+                'token' => $token,
+                'token_type' => 'Bearer',
+            ]
+        ], 200);
+
+        // return $setCorsHeaders($response); 
+        return $response; 
+    } catch (\Exception $e) {
+        // Log the error for debugging
+        \Log::error('Google authentication failed', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        $response = response()->json([
+            'error' => 'Google authentication failed',
+            'message' => $e->getMessage()
+        ], 401);
+
+        // return $setCorsHeaders($response);
+        return $response;
     }
+}
+
+/**
+ * Verify Google ID Token and return user data (without Google API client)
+ */
+private function verifyGoogleIdToken($idToken)
+{
+    try {
+        // Verify token with Google's tokeninfo endpoint
+        $response = Http::get('https://oauth2.googleapis.com/tokeninfo', [
+            'id_token' => $idToken
+        ]);
+        
+        if ($response->successful()) {
+            $payload = $response->json();
+            
+            // Verify the token is for your app
+            if ($payload['aud'] !== config('services.google.client_id')) {
+                return null;
+            }
+            
+            return $payload;
+        }
+        
+        return null;
+    } catch (\Exception $e) {
+        \Log::error('Google ID token verification failed', ['error' => $e->getMessage()]);
+        return null;
+    }
+}
+//     public function googleLogin(Request $request)
+// {
+//     $setCorsHeaders = function($response) {
+//         $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:5173');
+//         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+//         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//         return $response;
+//     };
+
+//     $request->validate([
+//         'token' => 'required|string',
+//     ]);
+    
+//     try {
+//         // Decode the JWT ID token from Google One Tap
+//         $googleUser = $this->verifyGoogleIdToken($request->token);
+        
+//         if (!$googleUser) {
+//             return $setCorsHeaders(response()->json([
+//                 'success' => false,
+//                 'message' => 'Invalid Google token',
+//                 'error' => 'The provided token is invalid or expired'
+//             ], 401));
+//         }
+
+//         // Check if user exists with improved error handling
+//         $user = User::firstOrCreate(
+//             ['email' => $googleUser['email']],
+//             [
+//                 'name' => $googleUser['name'],
+//                 'last_name' => $googleUser['family_name'] ?? '',
+//                 'avatar' => $googleUser['picture'] ?? '',
+//                 'password' => bcrypt(Str::random(16)),
+//                 'email_verified_at' => now(),
+//                 'status' => 'active',
+//             ]
+//         );
+
+//         // Check if user is active (same as regular login)
+//         if ($user->status !== 'active') {
+//             return $setCorsHeaders(response()->json([
+//                 'success' => false,
+//                 'message' => 'Your account has been deactivated. Please contact support.'
+//             ], 403));
+//         }
+
+//         // Delete existing tokens (optional, based on your preference)
+//         // $user->tokens()->delete();
+
+//         // Laravel 11 token creation with expiration
+//         $tokenName = 'auth_token_' . now()->timestamp;
+//         $token = $user->createToken(
+//             name: $tokenName,
+//             abilities: ['*'],
+//             expiresAt: now()->addDays(30)
+//         )->plainTextToken;
+
+//         // Return response in the same format as regular login
+//         $response = response()->json([
+//             'success' => true,
+//             'message' => 'Google login successful',
+//             'data' => [
+//                 'user' => new UserResource($user),
+//                 'token' => $token,
+//                 'token_type' => 'Bearer',
+//             ]
+//         ], 200);
+
+//         return $setCorsHeaders($response);
+
+//     } catch (\Exception $e) {
+//         // Log the error for debugging
+//         \Log::error('Google authentication failed', [
+//             'error' => $e->getMessage(),
+//             'trace' => $e->getTraceAsString()
+//         ]);
+
+//         $response = response()->json([
+//             'success' => false,
+//             'message' => 'Google authentication failed',
+//             'error' => $e->getMessage()
+//         ], 500);
+
+//         return $setCorsHeaders($response);
+//     }
+// }
+
+
 
     public function changePassword(Request $request)
     {
