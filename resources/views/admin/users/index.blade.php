@@ -162,6 +162,7 @@
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Status</th>
+                                <th>Login Type</th>
                                 <th class="!text-center">Actions</th>
                             </tr>
                         </thead>
@@ -171,10 +172,13 @@
                                     <td>
                                         <div class="flex items-center w-max">
                                             <div x-show="contact.avatar" class="w-max">
-                                                <img :src="`/storage/${contact.avatar}`"
+                                                <img 
+                                                    :src="contact.login_type === 'google' ? contact.avatar : `/storage/${contact.avatar}`"
                                                     class="h-8 w-8 rounded-full object-cover ltr:mr-2 rtl:ml-2"
-                                                    alt="avatar" />
+                                                    alt="avatar" 
+                                                />
                                             </div>
+
                                             <div x-show="!contact.avatar && contact.name"
                                                 class="grid place-content-center h-8 w-8 ltr:mr-2 rtl:ml-2 rounded-full bg-primary text-white text-sm font-semibold"
                                                 x-text="contact.name.charAt(0) + '' + contact.name.charAt(contact.name.indexOf(' ') + 1)">
@@ -196,8 +200,9 @@
                                         </div>
                                     </td>
                                     <td x-text="contact.email"></td>
-                                    <td x-text="contact.role" class="whitespace-nowrap"></td>
+                                    <td x-text="contact.role.charAt(0).toUpperCase() + contact.role.slice(1)" class="whitespace-nowrap"></td>
                                     <td x-text="contact.status" class="whitespace-nowrap"></td>
+                                    <td x-text="contact.login_type.charAt(0).toUpperCase() + contact.login_type.slice(1)" class="whitespace-nowrap"></td>
                                     <td>
                                         <div class="flex gap-4 items-center justify-center">
                                             <button type="button" class="btn btn-sm btn-outline-primary"
@@ -453,10 +458,11 @@
 
     async deleteUser(user) {
         try {
-            const response = await fetch(`/api/users/${user.id}`, {
+            const response = await fetch(`/admin/users/${user.id}`, {
                 method: "DELETE",
                 headers: {
-                    "Accept": "application/json"
+                    "Accept": "application/json",
+                    'X-CSRF-TOKEN': token,
                 }
             });
 

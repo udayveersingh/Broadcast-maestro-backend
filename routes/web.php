@@ -148,6 +148,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/get-users', [UserController::class, 'get_users'])->name('admin.users.get_users');
     Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('admin.campaigns.index');
     Route::put('/campaigns/{id}', [CampaignController::class, 'update'])->name('admin.campaigns.update');

@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 use OpenApi\Annotations as OA;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -537,6 +538,7 @@ class AuthController extends Controller
                 'password' => bcrypt(Str::random(16)),
                 'email_verified_at' => now(),
                 'status' => 'active',
+                'login_type' => 'google',
             ]
         );
 
@@ -562,7 +564,7 @@ class AuthController extends Controller
         return $response; 
     } catch (\Exception $e) {
         // Log the error for debugging
-        \Log::error('Google authentication failed', [
+        Log::error('Google authentication failed', [
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString()
         ]);
@@ -601,7 +603,7 @@ private function verifyGoogleIdToken($idToken)
         
         return null;
     } catch (\Exception $e) {
-        \Log::error('Google ID token verification failed', ['error' => $e->getMessage()]);
+        Log::error('Google ID token verification failed', ['error' => $e->getMessage()]);
         return null;
     }
 }
