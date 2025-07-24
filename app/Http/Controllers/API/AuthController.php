@@ -726,4 +726,70 @@ private function verifyGoogleIdToken($idToken)
             ], 500);
         }
     }
+
+    public function microsoftLogin(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+        ]);
+
+        try {
+            $token = $request->token;
+            
+            $tokenParts = explode(".", $token);
+            if (count($tokenParts) !== 3) {
+                return response()->json(['error' => 'Invalid token format'], 401);
+            }
+            
+            $payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $tokenParts[1])), true);
+
+            if (!$payload) {
+                return response()->json(['error' => 'Invalid Microsoft token'], 401);
+            }
+
+            // Microsoft token fields (can vary)
+            $email = $payload['email'] ?? $payload['preferred_username'] ?? null;
+            $name = $payload['name'] ?? $email;
+            
+            if (!$email) {
+                return response()->json(['error' => 'Email not found in Microsoft token'], 401);
+            }
+
+            $user = User::firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $name,
+                    'avatar' => $payload['picture'] ?? '',
+                    'password' => bcrypt(Str::random(16)),
+                    'email_verified_at' => now(),
+                    'status' => 'active',
+                    'login_type' => 'microsoft',
+                ]
+            );
+
+            $authToken = $user->createToken(
+                'auth_token_' . now()->timestamp,
+                ['*'],
+                now()->addDays(30)
+            )->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Microsoft login successful',
+                'data' => [
+                    'user' => new UserResource($user),
+                    'token' => $authToken,
+                    'token_type' => 'Bearer',
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Microsoft login error: ' . $e->getMessage());
+            
+            return response()->json([
+                'error' => 'Microsoft authentication failed',
+                'message' => $e->getMessage(),
+            ], 401);
+        }
+    }
 }
