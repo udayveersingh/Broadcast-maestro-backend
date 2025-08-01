@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Tool;
 use Illuminate\Support\Facades\Validator;
 
-class ToolController extends Controller
+class ToolsController extends Controller
 {
     /**
      * @OA\Get(

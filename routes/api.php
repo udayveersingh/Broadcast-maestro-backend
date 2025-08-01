@@ -6,7 +6,7 @@ use App\Http\Controllers\API\CampaignController;
 use App\Http\Controllers\API\GoalController;
 use App\Http\Controllers\API\ProfileApiController;
 use App\Http\Controllers\API\TargetAudienceController;
-use App\Http\Controllers\Api\ToolController;
+use App\Http\Controllers\Api\ToolsController;
 use App\Http\Controllers\Api\ToolParameterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 
@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/goals', [GoalController::class, 'index']);
     Route::get('/target-audiences', [TargetAudienceController::class, 'index']);
-    Route::get('/tools', [ToolController::class, 'index']);
-    Route::post('/assign-user-tools/{id}',[ToolController::class, 'assignUserTools']);
-    Route::get('/get-user-tools',[ToolController::class, 'getUserTools']);
+    Route::get('/tools', [ToolsController::class, 'index']);
+    Route::post('/assign-user-tools/{id}',[ToolsController::class, 'assignUserTools']);
+    Route::get('/get-user-tools',[ToolsController::class, 'getUserTools']);
 });
