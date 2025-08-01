@@ -74,9 +74,9 @@ class ToolsController extends Controller
         if (is_null($userID)) {
             return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
         } else {
-            $user_tools =  AdminUserTool::where('user_id','=',$userID)->select('name','budget','deadline','supplier')->latest()->get();
-            $admin_tools = Tool::select('name','budget','deadline','supplier')->latest()->get();
-            return response()->json(['success' => true, 'userTools' =>  $user_tools,'adminTools'=>$admin_tools], 200);
+            $user_tools =  AdminUserTool::where('user_id', '=', $userID)->select('name', 'budget', 'deadline', 'supplier')->latest()->get();
+            $admin_tools = Tool::select('name', 'budget', 'deadline', 'supplier')->latest()->get();
+            return response()->json(['success' => true, 'userTools' =>  $user_tools, 'adminTools' => $admin_tools], 200);
         }
     }
 
@@ -85,6 +85,7 @@ class ToolsController extends Controller
         $user_id = $id;
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'tool_id' => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->errors()->first();
@@ -94,16 +95,24 @@ class ToolsController extends Controller
             ], 400);
         }
 
-        $admin_user_tools = new AdminUserTool();
-        $admin_user_tools->user_id =  $user_id;
-        $admin_user_tools->tool_id = $request->input('tool_id');
-        $admin_user_tools->name = $request->input('name');
-        $admin_user_tools->content_prompt = $request->input('content_prompt');
-        $admin_user_tools->budget = $request->input('budget');
-        $admin_user_tools->deadline = $request->input('deadline');
-        $admin_user_tools->supplier = $request->input('supplier');
-        $admin_user_tools->target_audience = $request->input('target_audience');
-        $admin_user_tools->save();
-        return response()->json(['success' => true, 'message' => 'tool assign to user successfull.', 'data' => $admin_user_tools], 200);
+        $admin_user_tools = AdminUserTool::where('user_id', '=', $id)->where('tool_id', '=', $request->input('tool_id'))->first();
+
+        if (!empty($admin_user_tools)) {
+            $user_tools = AdminUserTool::find($admin_user_tools->id);
+            $message = 'Tool already assigned to the user. Assignment updated.';
+        } else {
+            $user_tools = new AdminUserTool();
+            $message = 'Tool has been successfully assigned to the user.';
+        }
+        $user_tools->user_id =  $user_id;
+        $user_tools->tool_id = $request->input('tool_id');
+        $user_tools->name = $request->input('name');
+        $user_tools->content_prompt = $request->input('content_prompt');
+        $user_tools->budget = $request->input('budget');
+        $user_tools->deadline = $request->input('deadline');
+        $user_tools->supplier = $request->input('supplier');
+        $user_tools->target_audience = $request->input('target_audience');
+        $user_tools->save();
+        return response()->json(['success' => true, 'message' =>  $message, 'data' => $user_tools], 200);
     }
 }
