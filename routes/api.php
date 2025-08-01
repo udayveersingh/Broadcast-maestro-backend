@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ToolsController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CampaignController;
 use App\Http\Controllers\API\GoalController;
 use App\Http\Controllers\API\ProfileApiController;
 use App\Http\Controllers\API\TargetAudienceController;
-use App\Http\Controllers\Api\ToolsController;
 use App\Http\Controllers\Api\ToolParameterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 
