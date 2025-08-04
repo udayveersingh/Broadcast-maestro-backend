@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\TargetAudienceController;
 use App\Http\Controllers\Admin\ToolController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CampaignController;
+use App\Models\TargetAudience;
 use Illuminate\Support\Facades\Auth;
 
 // Route::view('/', 'index');
@@ -164,5 +165,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/tools', [ToolController::class, 'store'])->name('admin.tools.store');
     Route::delete('/tools/{tool}', [ToolController::class, 'destroy'])->name('admin.tools.destroy');
     Route::get('/get-target-audiences', [TargetAudienceController::class, 'index'])->name('admin.target-audiences.index');
-});
 
+    Route::get('/target-audience/data', [TargetAudienceController::class, 'data'])->name('target-audience.data');
+    Route::get('/target-audiences', [TargetAudienceController::class, 'list'])->name('admin.target-audiences.list');
+    Route::get('/target-audiences/create', [TargetAudienceController::class, 'create'])->name('admin.target-audience.create');
+    Route::get('/target-audience/{id}/edit', [TargetAudienceController::class, 'create'])->name('admin.target-audience.edit');
+    Route::post('/target-audiences', [TargetAudienceController::class, 'store'])->name('admin.target-audience.store');
+    Route::post('/target-audiences/{id}', [TargetAudienceController::class, 'store'])->name('admin.target-audience.update');
+    Route::delete('/target-audiences/{id}', [TargetAudienceController::class, 'destroy'])->name('admin.target-audience.destroy');
+    Route::post('/target-audiences/delete', [TargetAudienceController::class, 'deleteMultiple'])->name('admin.target-audience.deleteMultiple');
+});
