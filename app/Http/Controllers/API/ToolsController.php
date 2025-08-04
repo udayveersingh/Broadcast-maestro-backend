@@ -75,7 +75,7 @@ class ToolsController extends Controller
             return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
         } else {
             $user_tools =  AdminUserTool::where('user_id', '=', $userID)->select('name', 'budget', 'deadline', 'supplier')->latest()->get();
-            $admin_tools = Tool::select('name', 'budget', 'deadline', 'supplier')->latest()->get();
+            $admin_tools = Tool::select('tool_id','name', 'budget', 'deadline', 'supplier')->latest()->get();
             return response()->json(['success' => true, 'userTools' =>  $user_tools, 'adminTools' => $admin_tools], 200);
         }
     }
