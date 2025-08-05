@@ -55,7 +55,6 @@ class TargetAudienceController extends Controller
         } else {
             if (!empty($id)) {
                 $TargetAudience = TargetAudience::find($id);
-                dd($id, $TargetAudience);
                 $message = 'Target Audience updated successfully.';
             } else {
                 $TargetAudience = new TargetAudience();
