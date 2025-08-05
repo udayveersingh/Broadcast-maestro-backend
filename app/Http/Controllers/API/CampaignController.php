@@ -67,14 +67,15 @@ class CampaignController extends Controller
      */
      public function store(CreateCampaignRequest $request)
     {
-        dd($request->all());
         $data = $request->only([
         'name', 'description', 'type',
         'start_date', 'end_date', 'budget','status'
         ]);
         $data['user_id'] = auth()->id();
 
+        dd($data);
         $campaign = Campaign::create($data);
+
 
         // Attach relationships
         if ($request->has('goal_id')) {
