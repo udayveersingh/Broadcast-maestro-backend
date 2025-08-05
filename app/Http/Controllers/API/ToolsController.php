@@ -126,7 +126,7 @@ class ToolsController extends Controller
         if (is_null($userID)) {
             return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
         } else {
-            $target_audiences =  TargetAudience::select('id', 'name')->latest()->get();
+            $target_audiences =  TargetAudience::select('id', 'name')->orderBy('id','DESC')->get();
 
             return response()->json(['success' => true, 'targetAudiences' => $target_audiences], 200);
         }
