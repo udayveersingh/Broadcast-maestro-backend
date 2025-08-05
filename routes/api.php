@@ -51,9 +51,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-campaigns', [CampaignController::class, 'myCampaigns']);
 
     Route::get('/goals', [GoalController::class, 'index']);
-    Route::get('/target-audiences', [TargetAudienceController::class, 'index']);
     Route::get('/tools', [ToolsController::class, 'index']);
     Route::post('/assign-user-tools/{id}', [ToolsController::class, 'assignUserTools']);
     Route::get('/get-user-tools', [ToolsController::class, 'getUserTools']);
-    Route::get('/get-target-audiences', [ToolsController::class, 'getTargetAudience']);
+    // Route::get('/get-target-audiences', [ToolsController::class, 'getTargetAudience']);
+    Route::get('/target-audiences', [TargetAudienceController::class, 'index']);
+    Route::post('/target-audiences', [TargetAudienceController::class, 'store']);
+    Route::put('/target-audiences/{id}', [TargetAudienceController::class, 'store']);
 });

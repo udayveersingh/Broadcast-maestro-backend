@@ -35,9 +35,37 @@ class TargetAudienceController extends Controller
      */
     public function index()
     {
-        return response()->json(
-            TargetAudience::select('id', 'name')
-                ->get()
-        );
+        $userID = auth()->id();
+
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
+        } else {
+            $target_audiences =  TargetAudience::select('id', 'name')->orderBy('id', 'DESC')->get();
+
+            return response()->json(['success' => true, 'targetAudiences' => $target_audiences], 200);
+        }
+    }
+
+
+    public function store(Request $request, $id = null)
+    {
+        $userID = auth()->id();
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
+        } else {
+            if (!empty($id)) {
+                $TargetAudience = TargetAudience::find($id);
+                $message = 'Target Audience updated successfully.';
+            } else {
+                $TargetAudience = new TargetAudience();
+                $message = 'Target Audience created successfully.';
+            }
+            $TargetAudience->user_id = $userID;
+            $TargetAudience->name = $request->input('target_audience');
+            $TargetAudience->description = $request->input('target_audience') . ' group';
+            $TargetAudience->criteria = json_encode([]);
+            $TargetAudience->save();
+            return response()->json(['success' => true, 'message' => $message, 'targetAudiences' => $TargetAudience], 200);
+        }
     }
 }
