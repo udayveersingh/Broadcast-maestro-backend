@@ -65,7 +65,7 @@ class CampaignController extends Controller
      *     )
      * )
      */
-     public function store(CreateCampaignRequest $request)
+     public function store(CreateCampaignRequest $request,$id="")
     {
         $data = $request->only([
         'name', 'description', 'type',
@@ -73,7 +73,8 @@ class CampaignController extends Controller
         ]);
         $data['user_id'] = auth()->id();
 
-        dd($data);
+        dd($id);
+
         $campaign = Campaign::create($data);
 
 
