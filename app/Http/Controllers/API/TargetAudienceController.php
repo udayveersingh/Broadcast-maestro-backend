@@ -80,4 +80,24 @@ class TargetAudienceController extends Controller
             'targetAudiences' => $TargetAudience
         ], 200);
     }
+
+
+    public function destroy($id)
+    {
+        $userID = auth()->id();
+
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
+        }
+
+        $targetAudience = TargetAudience::where('id', $id)->where('user_id', $userID)->first();
+
+        if (!$targetAudience) {
+            return response()->json(['success' => false, 'message' => 'Target Audience not found.'], 404);
+        }
+
+        $targetAudience->delete();
+
+        return response()->json(['success' => true, 'message' => 'Target Audience deleted successfully.']);
+    }
 }
