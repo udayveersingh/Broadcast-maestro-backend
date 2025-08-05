@@ -57,5 +57,5 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::get('/get-target-audiences', [ToolsController::class, 'getTargetAudience']);
     Route::get('/target-audiences', [TargetAudienceController::class, 'index']);
     Route::post('/target-audiences', [TargetAudienceController::class, 'store']);
-    Route::put('/target-audiences/{id}', [TargetAudienceController::class, 'store']);
+    Route::Patch('/target-audiences/{id}', [TargetAudienceController::class, 'store']);
 });
