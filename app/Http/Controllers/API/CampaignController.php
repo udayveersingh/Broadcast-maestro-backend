@@ -67,6 +67,7 @@ class CampaignController extends Controller
      */
      public function store(CreateCampaignRequest $request)
     {
+        dd($request->all());
         $data = $request->only([
         'name', 'description', 'type',
         'start_date', 'end_date', 'budget','status'
