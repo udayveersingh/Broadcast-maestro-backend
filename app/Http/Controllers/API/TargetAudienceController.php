@@ -50,22 +50,34 @@ class TargetAudienceController extends Controller
     public function store(Request $request, $id = null)
     {
         $userID = auth()->id();
+
         if (is_null($userID)) {
             return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
-        } else {
-            if (!empty($id)) {
-                $TargetAudience = TargetAudience::find($id);
-                $message = 'Target Audience updated successfully.';
-            } else {
-                $TargetAudience = new TargetAudience();
-                $message = 'Target Audience created successfully.';
-            }
-            $TargetAudience->user_id = $userID;
-            $TargetAudience->name = $request->input('name');
-            $TargetAudience->description = $request->input('name') . ' group';
-            $TargetAudience->criteria = json_encode([]);
-            $TargetAudience->save();
-            return response()->json(['success' => true, 'message' => $message, 'targetAudiences' => $TargetAudience], 200);
         }
+
+        // Validate input
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        if (!empty($id)) {
+            $TargetAudience = TargetAudience::findOrFail($id); // Use findOrFail for safety
+            $message = 'Target Audience updated successfully.';
+        } else {
+            $TargetAudience = new TargetAudience();
+            $message = 'Target Audience created successfully.';
+        }
+
+        $TargetAudience->user_id = $userID;
+        $TargetAudience->name = $request->input('name');
+        $TargetAudience->description = $request->input('name') . ' group';
+        $TargetAudience->criteria = json_encode([]);
+        $TargetAudience->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'targetAudiences' => $TargetAudience
+        ], 200);
     }
 }
