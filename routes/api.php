@@ -51,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/goals', [GoalController::class, 'index']);
     Route::get('/target-audiences', [TargetAudienceController::class, 'index']);
     Route::get('/tools', [ToolsController::class, 'index']);
-    Route::post('/assign-user-tools/{id}',[ToolsController::class, 'assignUserTools']);
-    Route::get('/get-user-tools',[ToolsController::class, 'getUserTools']);
+    Route::post('/assign-user-tools/{id}', [ToolsController::class, 'assignUserTools']);
+    Route::get('/get-user-tools', [ToolsController::class, 'getUserTools']);
+    Route::get('/get-target-audiences', [ToolsController::class, 'getTargetAudience']);
 });

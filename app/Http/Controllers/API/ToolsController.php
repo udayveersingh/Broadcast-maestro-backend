@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminUserTool;
+use App\Models\TargetAudience;
 use Illuminate\Http\Request;
 use App\Models\Tool;
 use Illuminate\Support\Facades\Validator;
@@ -74,7 +75,7 @@ class ToolsController extends Controller
         if (is_null($userID)) {
             return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
         } else {
-            $user_tools =  AdminUserTool::where('user_id', '=', $userID)->select('tool_id','name', 'budget', 'deadline', 'supplier')->latest()->get();
+            $user_tools =  AdminUserTool::where('user_id', '=', $userID)->select('tool_id', 'name', 'budget', 'deadline', 'supplier')->latest()->get();
             $admin_tools = Tool::select('name', 'budget', 'deadline', 'supplier')->latest()->get();
             return response()->json(['success' => true, 'userTools' =>  $user_tools, 'adminTools' => $admin_tools], 200);
         }
@@ -114,5 +115,20 @@ class ToolsController extends Controller
         $user_tools->target_audience = $request->input('target_audience');
         $user_tools->save();
         return response()->json(['success' => true, 'message' =>  $message, 'data' => $user_tools], 200);
+    }
+
+
+
+    public function getTargetAudience()
+    {
+        $userID = auth()->id();
+
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
+        } else {
+            $target_audiences =  TargetAudience::select('id', 'name')->latest()->get();
+
+            return response()->json(['success' => true, 'targetAudiences' => $target_audiences], 200);
+        }
     }
 }
