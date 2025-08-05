@@ -61,8 +61,8 @@ class TargetAudienceController extends Controller
                 $message = 'Target Audience created successfully.';
             }
             $TargetAudience->user_id = $userID;
-            $TargetAudience->name = $request->input('target_audience');
-            $TargetAudience->description = $request->input('target_audience') . ' group';
+            $TargetAudience->name = $request->input('name');
+            $TargetAudience->description = $request->input('name') . ' group';
             $TargetAudience->criteria = json_encode([]);
             $TargetAudience->save();
             return response()->json(['success' => true, 'message' => $message, 'targetAudiences' => $TargetAudience], 200);
