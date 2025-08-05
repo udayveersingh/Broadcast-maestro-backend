@@ -65,28 +65,36 @@ class CampaignController extends Controller
      *     )
      * )
      */
-     public function store(CreateCampaignRequest $request,$id="")
+    public function store(CreateCampaignRequest $request, $id = null)
     {
         $data = $request->only([
-        'name', 'description', 'type',
-        'start_date', 'end_date', 'budget','status'
+            'name',
+            'description',
+            'type',
+            'start_date',
+            'end_date',
+            'budget',
+            'status'
         ]);
         $data['user_id'] = auth()->id();
 
-        dd($id);
+        if ($id) {
+            $campaign = Campaign::findOrFail($id);
+            $campaign->update($data);
+        } else {
+            $campaign = Campaign::create($data);
+        }
 
-        $campaign = Campaign::create($data);
-
-
-        // Attach relationships
+        // Sync (not attach) relationships for updates
         if ($request->has('goal_id')) {
-            $campaign->goals()->attach($request->goal_id);
+            $campaign->goals()->sync($request->goal_id); // use sync instead of attach
         }
 
         if ($request->has('target_audience_id')) {
-            $campaign->targetAudiences()->attach($request->target_audience_id);
+            $campaign->targetAudiences()->sync($request->target_audience_id);
         }
 
+        // Handle multiple media files
         if ($request->hasFile('media_files')) {
             foreach ($request->file('media_files') as $file) {
                 $path = $file->store('uploads/media', 'public');
@@ -104,10 +112,10 @@ class CampaignController extends Controller
             }
         }
 
-         if ($request->hasFile('media_file')) {
+        // Handle single media file
+        if ($request->hasFile('media_file')) {
             $file = $request->file('media_file');
 
-            // Upload new file
             $path = $file->store('uploads/media', 'public');
 
             $media = MediaLibrary::create([
@@ -124,6 +132,7 @@ class CampaignController extends Controller
 
         return new CampaignResource($campaign->load(['goals', 'targetAudiences', 'media']));
     }
+
 
     // public function store(CreateCampaignRequest $request)
     // {
@@ -194,12 +203,12 @@ class CampaignController extends Controller
     //     } catch (\Exception $e) {
     //         // Log the actual error
     //         \Log::error('Campaign creation error: ' . $e->getMessage());
-            
+
     //         $response = response()->json([
     //             'error' => 'Campaign creation failed',
     //             'message' => $e->getMessage()
     //         ], 500);
-            
+
     //         // return $setCorsHeaders($response);
     //         return $response;
     //     }
@@ -207,7 +216,7 @@ class CampaignController extends Controller
 
     public function index(Request $request)
     {
-         $query = Campaign::with(['user', 'media','targetAudiences', 'goals']); 
+        $query = Campaign::with(['user', 'media', 'targetAudiences', 'goals']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -256,5 +265,4 @@ class CampaignController extends Controller
 
         return response()->json($query->latest()->paginate($perPage));
     }
-
 }
