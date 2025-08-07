@@ -100,4 +100,24 @@ class TargetAudienceController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Target Audience deleted successfully.']);
     }
+
+    public function getAudience($id)
+    {
+        $userID = auth()->id();
+
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
+        }
+
+        $targetAudience = TargetAudience::find($id);
+
+        if (!$targetAudience) {
+            return response()->json(['success' => false, 'message' => 'Target Audience not found.'], 404);
+        } else {
+            return response()->json([
+                'success' => true,
+                'targetAudiences' => $targetAudience
+            ], 200);
+        }
+    }
 }
