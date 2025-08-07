@@ -58,6 +58,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/target-audiences', [TargetAudienceController::class, 'index']);
     Route::post('/target-audiences', [TargetAudienceController::class, 'store']);
     Route::get('/get-audience/{id}', [TargetAudienceController::class, 'getAudience']);
-    Route::Patch('/target-audiences/{id}', [TargetAudienceController::class, 'store']);
+    Route::patch('/target-audiences/{id}', [TargetAudienceController::class, 'store']);
     Route::delete('/target-audiences/{id}', [TargetAudienceController::class, 'destroy']);
 });
