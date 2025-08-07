@@ -49,7 +49,6 @@ class TargetAudienceController extends Controller
 
     public function store(Request $request, $id = null)
     {
-        dd($id);
         $userID = auth()->id();
 
         if (is_null($userID)) {
