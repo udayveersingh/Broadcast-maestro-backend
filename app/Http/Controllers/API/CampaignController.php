@@ -265,4 +265,24 @@ class CampaignController extends Controller
 
         return response()->json($query->latest()->paginate($perPage));
     }
+
+    public function getCompaign($id)
+    {
+        $userID = auth()->id();
+
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
+        }
+
+        $compaign = Campaign::find($id);
+
+        if (!$compaign) {
+            return response()->json(['success' => false, 'message' => 'compaign not found.'], 404);
+        } else {
+            return response()->json([
+                'success' => true,
+                'compaign' =>  $compaign
+            ], 200);
+        }
+    }
 }
