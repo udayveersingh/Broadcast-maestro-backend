@@ -274,24 +274,28 @@ class CampaignController extends Controller
             return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
         }
 
-        $campaign = Campaign::with('targetAudiences', 'goals')->find($id);
+        $campaignData = Campaign::with('targetAudiences', 'goals')->find($id);
+
+        $campaign = [
+            'id' => $campaignData->id,
+            'user_id' => $campaignData->user_id,
+            'name' => $campaignData->name,
+            'description' => $campaignData->description,
+            'type' => $campaignData->type,
+            'status' => $campaignData->status,
+            'start_date' =>  $campaignData->start_date,
+            'end_date' =>  $campaignData->end_date,
+            'budget' =>  $campaignData->budget,
+            'goal_id' => optional($campaignData->goals->first())->id,
+            'target_audience_id' => optional($campaignData->targetAudiences->first())->id,
+        ];
 
         if (!$campaign) {
             return response()->json(['success' => false, 'message' => 'compaign not found.'], 404);
         } else {
             return response()->json([
                 'success' => true,
-                'id' => $campaign->id,
-                'user_id' => $campaign->user_id,
-                'name' => $campaign->name,
-                'description' =>  $campaign->description,
-                'type' =>  $campaign->type,
-                'status' => $campaign->status,
-                'start_date' => $campaign->start_date,
-                'end_date' => $campaign->end_date,
-                'budget' => $campaign->budget,
-                'goal_id' => optional($campaign->goals->first())->id,
-                'target_audience_id' => optional($campaign->targetAudiences->first())->id,
+                'compaign' =>  $campaign
             ], 200);
         }
     }
