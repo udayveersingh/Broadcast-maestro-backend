@@ -274,14 +274,24 @@ class CampaignController extends Controller
             return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
         }
 
-        $compaign = Campaign::find($id);
+        $campaign = Campaign::with('targetAudiences', 'goals')->find($id);
 
-        if (!$compaign) {
+        if (!$campaign) {
             return response()->json(['success' => false, 'message' => 'compaign not found.'], 404);
         } else {
             return response()->json([
                 'success' => true,
-                'compaign' =>  $compaign
+                'id' => $campaign->id,
+                'user_id' => $campaign->user_id,
+                'name' => $campaign->name,
+                'description' =>  $campaign->description,
+                'type' =>  $campaign->type,
+                'status' => $campaign->status,
+                'start_date' => $campaign->start_date,
+                'end_date' => $campaign->end_date,
+                'budget' => $campaign->budget,
+                'goal_id' => optional($campaign->goals->first())->id,
+                'target_audience_id' => optional($campaign->targetAudiences->first())->id,
             ], 200);
         }
     }
