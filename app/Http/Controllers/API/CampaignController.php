@@ -361,7 +361,7 @@ class CampaignController extends Controller
             ], 400);
         }
 
-        $user_campaign_template = CampaignTemplate::where('user_id', '=', $userID)->where('tool_id', '=', $request->input('tool_id'))->where('campaign_id', '=', $request->input('campaign_id'))->first();
+        $user_campaign_template = CampaignTemplate::where('tool_id', '=', $request->input('tool_id'))->where('campaign_id', '=', $request->input('campaign_id'))->first();
 
         if (!empty($user_campaign_template)) {
             $campaign_template = CampaignTemplate::find($user_campaign_template->id);
@@ -370,7 +370,7 @@ class CampaignController extends Controller
             $campaign_template = new CampaignTemplate();
             $message = 'Campaign template has been created successfully';
         }
-
+        $campaign_template->user_id =  $userID;
         $campaign_template->campaign_id = $request->input('campaign_id');
         $campaign_template->tool_id = $request->input('tool_id');
         $campaign_template->title = $request->input('title');
