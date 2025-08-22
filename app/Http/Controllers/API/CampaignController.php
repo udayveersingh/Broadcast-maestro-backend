@@ -325,7 +325,7 @@ class CampaignController extends Controller
     public function getCampaignTemplate()
     {
         $userID = auth()->id();
-        
+        dd( $userID );
         if (is_null($userID)) {
             return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
         }
