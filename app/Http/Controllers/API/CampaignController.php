@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Campaign\CreateCampaignRequest;
 use App\Http\Resources\CampaignResource;
 use App\Models\Campaign;
+use App\Models\CampaignTemplate;
 use App\Models\MediaLibrary;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CampaignController extends Controller
 {
@@ -314,8 +316,67 @@ class CampaignController extends Controller
             return response()->json(['success' => false, 'message' => 'Campaign not found.'], 404);
         }
 
-         $campaign->delete();
+        $campaign->delete();
 
         return response()->json(['success' => true, 'message' => 'Campaign deleted successfully.']);
+    }
+
+
+    public function getCampaignTemplate()
+    {
+        $userID = auth()->id();
+
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
+        }
+
+        $campaign_template =  CampaignTemplate::where('user_id', '=', $userID)->get();
+        if (!$campaign_template) {
+            return response()->json(['success' => false, 'message' => 'Campaign template not found.'], 404);
+        } else {
+            return response()->json([
+                'success' => true,
+                'campaign_templates' => $campaign_template
+            ], 200);
+        }
+    }
+
+
+    public function storeCampTemp(Request $request)
+    {
+        $userID = auth()->id();
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
+        }
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'campaign_id' => 'required',
+            'tool_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+            return response()->json([
+                'success' => false,
+                'message' =>  $error
+            ], 400);
+        }
+
+        $user_campaign_template = CampaignTemplate::where('user_id', '=', $userID)->where('tool_id', '=', $request->input('tool_id'))->where('campaign_id', '=', $request->input('campaign_id'))->first();
+
+        if (!empty($user_campaign_template)) {
+            $campaign_template = CampaignTemplate::find($user_campaign_template->id);
+            $message = 'Campaign template already assigned to the user. Campaign template updated.';
+        } else {
+            $campaign_template = new CampaignTemplate();
+            $message = 'Campaign template has been successfully assigned to the user.';
+        }
+
+        $campaign_template->campaign_id = $request->input('campaign_id');
+        $campaign_template->tool_id = $request->input('tool_id');
+        $campaign_template->title = $request->input('title');
+        $campaign_template->description = $request->input('description');
+        $campaign_template->save();
+
+        return response()->json(['success' => true, 'message' =>  $message, 'data' => $campaign_template], 200);
     }
 }
