@@ -96,6 +96,8 @@ class ToolsController extends Controller
             ], 400);
         }
 
+        dd($request->all());
+
         $admin_user_tools = AdminUserTool::where('user_id', '=', $id)->where('tool_id', '=', $request->input('tool_id'))->first();
 
         if (!empty($admin_user_tools)) {
