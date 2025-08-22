@@ -83,6 +83,7 @@ class ToolsController extends Controller
 
     public function assignUserTools(Request $request, $id)
     {
+        dd($request->all());
         $user_id = $id;
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -96,7 +97,6 @@ class ToolsController extends Controller
             ], 400);
         }
 
-        dd($request->all());
 
         $admin_user_tools = AdminUserTool::where('user_id', '=', $id)->where('tool_id', '=', $request->input('tool_id'))->first();
 
