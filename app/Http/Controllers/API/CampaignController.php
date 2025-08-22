@@ -325,7 +325,7 @@ class CampaignController extends Controller
     public function getCampaignTemplate()
     {
         $userID = auth()->id();
-
+        
         if (is_null($userID)) {
             return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
         }
@@ -368,7 +368,7 @@ class CampaignController extends Controller
             $message = 'Campaign template already assigned to the user. Campaign template updated.';
         } else {
             $campaign_template = new CampaignTemplate();
-            $message = 'Campaign template has been successfully assigned to the user.';
+            $message = 'Campaign template has been created successfully';
         }
 
         $campaign_template->campaign_id = $request->input('campaign_id');
