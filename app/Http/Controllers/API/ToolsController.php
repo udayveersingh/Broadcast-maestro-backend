@@ -75,15 +75,14 @@ class ToolsController extends Controller
         if (is_null($userID)) {
             return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
         } else {
-            $user_tools =  AdminUserTool::where('user_id', '=', $userID)->select('tool_id','target_audience', 'name', 'budget', 'deadline', 'supplier')->latest()->get();
-            $admin_tools = Tool::select('id','name', 'budget', 'deadline', 'supplier')->latest()->get();
+            $user_tools =  AdminUserTool::where('user_id', '=', $userID)->select('tool_id', 'target_audience', 'name', 'budget', 'deadline', 'supplier')->latest()->get();
+            $admin_tools = Tool::select('id', 'name', 'budget', 'deadline', 'supplier')->latest()->get();
             return response()->json(['success' => true, 'userTools' =>  $user_tools, 'adminTools' => $admin_tools], 200);
         }
     }
 
     public function assignUserTools(Request $request, $id)
     {
-        dd($request->all());
         $user_id = $id;
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -96,6 +95,15 @@ class ToolsController extends Controller
                 'message' =>  $error
             ], 400);
         }
+
+        $goals = $request->input('goals');
+        $goalValues = $request->input('goals_value');
+
+        $finalGoals = array_map(function ($id, $val) {
+            return ['goal_id' => $id, 'value' => $val];
+        }, $goals, $goalValues);
+
+        $goals_json_format = json_encode( $finalGoals);
 
 
         $admin_user_tools = AdminUserTool::where('user_id', '=', $id)->where('tool_id', '=', $request->input('tool_id'))->first();
@@ -115,6 +123,7 @@ class ToolsController extends Controller
         $user_tools->deadline = $request->input('deadline');
         $user_tools->supplier = $request->input('supplier');
         $user_tools->target_audience = $request->input('target_audience');
+        $user_tools->goals =  $goals_json_format;
         $user_tools->save();
         return response()->json(['success' => true, 'message' =>  $message, 'data' => $user_tools], 200);
     }
@@ -128,7 +137,7 @@ class ToolsController extends Controller
         if (is_null($userID)) {
             return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
         } else {
-            $target_audiences =  TargetAudience::select('id', 'name')->orderBy('id','DESC')->get();
+            $target_audiences =  TargetAudience::select('id', 'name')->orderBy('id', 'DESC')->get();
 
             return response()->json(['success' => true, 'targetAudiences' => $target_audiences], 200);
         }
