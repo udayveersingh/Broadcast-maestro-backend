@@ -299,4 +299,23 @@ class CampaignController extends Controller
             ], 200);
         }
     }
+
+    public function destroy($id)
+    {
+        $userID = auth()->id();
+
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
+        }
+
+        $campaign = Campaign::find($id);
+
+        if (!$campaign) {
+            return response()->json(['success' => false, 'message' => 'Campaign not found.'], 404);
+        }
+
+         $campaign->delete();
+
+        return response()->json(['success' => true, 'message' => 'Campaign deleted successfully.']);
+    }
 }
