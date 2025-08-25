@@ -277,7 +277,6 @@ class CampaignController extends Controller
         }
 
         $campaignData = Campaign::with('targetAudiences', 'goals','media')->find($id);
-        dd( $campaignData);
         $CampaignTemplates = CampaignTemplate::where('campaign_id','=',$id)->get(); 
 
         $campaign = [
