@@ -277,7 +277,7 @@ class CampaignController extends Controller
         }
 
         $campaignData = Campaign::with('targetAudiences', 'goals','media')->find($id);
-        dd($campaignData);
+        dd($campaignData->media);
         $CampaignTemplates = CampaignTemplate::where('campaign_id','=',$id)->get(); 
 
         $campaign = [
@@ -292,6 +292,7 @@ class CampaignController extends Controller
             'budget' =>  $campaignData->budget,
             'goal_id' => optional($campaignData->goals->first())->id,
             'target_audience_id' => optional($campaignData->targetAudiences->first())->id,
+             
         ];
 
         if (!$campaign) {
