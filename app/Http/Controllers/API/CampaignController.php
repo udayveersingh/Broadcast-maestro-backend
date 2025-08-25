@@ -277,6 +277,7 @@ class CampaignController extends Controller
         }
 
         $campaignData = Campaign::with('targetAudiences', 'goals')->find($id);
+        $CampaignTemplates = CampaignTemplate::where('campaign_id','=',$id)->get(); 
 
         $campaign = [
             'id' => $campaignData->id,
@@ -297,7 +298,8 @@ class CampaignController extends Controller
         } else {
             return response()->json([
                 'success' => true,
-                'compaign' =>  $campaign
+                'compaign' =>  $campaign,
+                'CampaignTemplates' =>  $CampaignTemplates
             ], 200);
         }
     }
