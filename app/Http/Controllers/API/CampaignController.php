@@ -276,7 +276,8 @@ class CampaignController extends Controller
             return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
         }
 
-        $campaignData = Campaign::with('targetAudiences', 'goals')->find($id);
+        $campaignData = Campaign::with('targetAudiences', 'goals','media')->find($id);
+        dd( $campaignData);
         $CampaignTemplates = CampaignTemplate::where('campaign_id','=',$id)->get(); 
 
         $campaign = [
