@@ -75,7 +75,16 @@ class ToolsController extends Controller
         if (is_null($userID)) {
             return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
         } else {
-            $user_tools =  AdminUserTool::where('user_id', '=', $userID)->select('tool_id', 'target_audience', 'name', 'budget', 'deadline', 'supplier','goals')->latest()->get();
+            $user_tools = AdminUserTool::where('user_id', '=', $userID)
+                ->select('tool_id', 'target_audience', 'name', 'budget', 'deadline', 'supplier', 'goals')
+                ->latest()
+                ->get()
+                ->map(function ($tool) {
+                    // Convert JSON string fields to arrays
+                    $tool->target_audience = json_decode($tool->target_audience, true);
+                    $tool->goals = json_decode($tool->goals, true);
+                    return $tool;
+                });
             $admin_tools = Tool::select('id', 'name', 'budget', 'deadline', 'supplier')->latest()->get();
             return response()->json(['success' => true, 'userTools' =>  $user_tools, 'adminTools' => $admin_tools], 200);
         }
@@ -103,7 +112,7 @@ class ToolsController extends Controller
             return ['goal_id' => $id, 'value' => $val];
         }, $goals, $goalValues);
 
-        $goals_json_format = json_encode( $finalGoals);
+        $goals_json_format = json_encode($finalGoals);
 
 
         $admin_user_tools = AdminUserTool::where('user_id', '=', $id)->where('tool_id', '=', $request->input('tool_id'))->first();
