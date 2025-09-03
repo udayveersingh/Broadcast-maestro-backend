@@ -26,6 +26,7 @@ Route::prefix('auth')->group(function () {
 
     Route::post('/send-reset-code', [ForgotPasswordController::class, 'sendResetCode']);
     Route::post('/reset-password-with-code', [ForgotPasswordController::class, 'resetWithCode']);
+    Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
     Route::post('/microsoft', [AuthController::class, 'microsoftLogin']);
 });
 

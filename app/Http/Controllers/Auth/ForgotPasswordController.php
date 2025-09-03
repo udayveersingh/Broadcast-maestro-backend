@@ -113,4 +113,33 @@ class ForgotPasswordController extends Controller
         }
     }
 
+
+    public function resetPassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'old_password' => 'required|min:8',
+                'new_password' => 'required|min:8',
+            ]);
+            // dd("Resetting password for {$request->email} with code {$request->code} {$request->password}");
+
+            $user = \App\Models\User::where('email', $request->email)->first();
+            if (!$user || !Hash::check($request->old_password, $user->password)) {
+                return response()->json(['message' => 'Invalid credentials.'], 422);
+            }
+
+            $user = \App\Models\User::where('email', $request->email)->first();
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            // Optionally delete used code
+            DB::table('password_reset_codes')->where('email', $request->email)->delete();
+
+            return response()->json(['message' => 'Password has been reset.']);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTrace()], 500);
+        }
+    }
+
 }
