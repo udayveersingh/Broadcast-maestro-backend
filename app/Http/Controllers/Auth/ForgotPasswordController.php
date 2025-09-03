@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ResetCodeMail;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -117,26 +118,21 @@ class ForgotPasswordController extends Controller
     public function resetPassword(Request $request)
     {
         try {
+            //   dd($request->all());
             $request->validate([
                 'email' => 'required|email',
-                'old_password' => 'required|min:8',
-                'new_password' => 'required|min:8',
+                'password' => 'required|min:8|confirmed',
             ]);
             // dd("Resetting password for {$request->email} with code {$request->code} {$request->password}");
-
-            $user = \App\Models\User::where('email', $request->email)->first();
-            if (!$user || !Hash::check($request->old_password, $user->password)) {
-                return response()->json(['message' => 'Invalid credentials.'], 422);
+            
+            $user = User::where('email', $request->email)->first();
+            if (!$user) {
+                return response()->json(['error' => 'User not found.'], 404);
             }
-
-            $user = \App\Models\User::where('email', $request->email)->first();
-            $user->password = Hash::make($request->new_password);
+            $user->password = Hash::make($request->password);
             $user->save();
 
-            // Optionally delete used code
-            DB::table('password_reset_codes')->where('email', $request->email)->delete();
-
-            return response()->json(['message' => 'Password has been reset.']);
+            return response()->json(['message' => 'Password has been updated.']);
         } catch (\Throwable $e) {
             return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTrace()], 500);
         }
