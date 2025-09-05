@@ -160,6 +160,7 @@ class ToolsController extends Controller
         }
 
         $admin_user_tools = AdminUserTool::where('id', $id)->where('user_id', $userID)->first();
+        dd($admin_user_tools);
 
         if (!$admin_user_tools) {
             return response()->json(['success' => false, 'message' => 'User tools not found.'], 404);
