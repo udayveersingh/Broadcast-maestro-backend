@@ -243,6 +243,14 @@ class CampaignController extends Controller
         return response()->json($query->latest()->paginate($perPage));
     }
 
+    public function search(Request $request)
+    {
+        dd($request->all());
+
+    }
+
+
+
     public function myCampaigns(Request $request)
     {
         $user = $request->user();
