@@ -76,7 +76,7 @@ class ToolsController extends Controller
             return response()->json(['success' => false, 'message' => "Invalid Request"], 401);
         } else {
             $user_tools = AdminUserTool::where('user_id', '=', $userID)
-                ->select('tool_id', 'target_audience', 'name','content_prompt','budget', 'deadline', 'supplier', 'goals')
+                ->select('tool_id', 'target_audience', 'name', 'content_prompt', 'budget', 'deadline', 'supplier', 'goals')
                 ->latest()
                 ->get()
                 ->map(function ($tool) {
@@ -85,7 +85,7 @@ class ToolsController extends Controller
                     $tool->goals = json_decode($tool->goals, true);
                     return $tool;
                 });
-            $admin_tools = Tool::select('id', 'name','content_prompt','budget', 'deadline', 'supplier')->latest()->get();
+            $admin_tools = Tool::select('id', 'name', 'content_prompt', 'budget', 'deadline', 'supplier')->latest()->get();
             return response()->json(['success' => true, 'userTools' =>  $user_tools, 'adminTools' => $admin_tools], 200);
         }
     }
@@ -150,5 +150,23 @@ class ToolsController extends Controller
 
             return response()->json(['success' => true, 'targetAudiences' => $target_audiences], 200);
         }
+    }
+
+    public function destroy($id)
+    {
+        $userID = auth()->id();
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
+        }
+
+        $admin_user_tools = AdminUserTool::where('id', $id)->where('user_id', $userID)->first();
+
+        if (!$admin_user_tools) {
+            return response()->json(['success' => false, 'message' => 'User tools not found.'], 404);
+        }
+
+        $admin_user_tools->delete();
+
+        return response()->json(['success' => true, 'message' => 'User tools deleted successfully.']);
     }
 }
