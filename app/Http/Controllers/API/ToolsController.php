@@ -159,7 +159,7 @@ class ToolsController extends Controller
             return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
         }
 
-        $admin_user_tools = AdminUserTool::where('id', $id)->where('user_id', $userID)->first();
+        $admin_user_tools = AdminUserTool::where('tool_id', $id)->where('user_id', $userID)->first();
         dd($admin_user_tools);
 
         if (!$admin_user_tools) {
