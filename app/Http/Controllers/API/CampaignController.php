@@ -245,8 +245,16 @@ class CampaignController extends Controller
 
     public function search(Request $request)
     {
-        dd($request->all());
+        $userID = auth()->id();
+        if (is_null($userID)) {
+            return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
+        }
+        
+        $query = $request->input('query'); // e.g. 'j', 'jak', 'jack'
 
+        $campaigns = Campaign::where('name', 'LIKE', '%' . $query . '%')->get();
+
+        return response()->json($campaigns);
     }
 
 
@@ -284,8 +292,8 @@ class CampaignController extends Controller
             return response()->json(['success' => false, 'message' => "Unauthorized"], 401);
         }
 
-        $campaignData = Campaign::with('targetAudiences', 'goals','media')->find($id);
-        $CampaignTemplates = CampaignTemplate::where('campaign_id','=',$id)->get(); 
+        $campaignData = Campaign::with('targetAudiences', 'goals', 'media')->find($id);
+        $CampaignTemplates = CampaignTemplate::where('campaign_id', '=', $id)->get();
 
         $campaign = [
             'id' => $campaignData->id,
