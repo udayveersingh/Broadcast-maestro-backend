@@ -133,7 +133,7 @@ class ToolsController extends Controller
         $user_tools->budget = $request->input('budget');
         $user_tools->deadline = $request->input('deadline');
         $user_tools->supplier = $request->input('supplier');
-        $user_tools->target_audience =  implode(',',$target_audiences);
+        $user_tools->target_audience = implode(',',$target_audiences);
         $user_tools->goals =  $goals_json_format;
         $user_tools->save();
         return response()->json(['success' => true, 'message' =>  $message, 'data' => $user_tools], 200);
