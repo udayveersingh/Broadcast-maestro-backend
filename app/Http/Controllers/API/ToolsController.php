@@ -105,6 +105,8 @@ class ToolsController extends Controller
             ], 400);
         }
 
+        dd($request->all());
+
 
         $goals = $request->input('goals');
         $goalValues = $request->input('goals_value');
