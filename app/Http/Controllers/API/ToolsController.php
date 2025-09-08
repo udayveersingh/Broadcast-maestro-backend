@@ -105,7 +105,6 @@ class ToolsController extends Controller
             ], 400);
         }
 
-        dd($request->all());
 
         $goals = $request->input('goals');
         $goalValues = $request->input('goals_value');
@@ -115,6 +114,8 @@ class ToolsController extends Controller
         }, $goals, $goalValues);
 
         $goals_json_format = json_encode($finalGoals);
+
+        dd( $goals_json_format );
 
 
         $admin_user_tools = AdminUserTool::where('user_id', '=', $id)->where('tool_id', '=', $request->input('tool_id'))->first();
