@@ -86,7 +86,6 @@ class ToolsController extends Controller
                     return $tool;
                 });
 
-                dd( $user_tools);
             $admin_tools = Tool::select('id', 'name', 'content_prompt', 'budget', 'deadline', 'supplier')->latest()->get();
             return response()->json(['success' => true, 'userTools' =>  $user_tools, 'adminTools' => $admin_tools], 200);
         }
