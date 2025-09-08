@@ -92,7 +92,7 @@ class ToolsController extends Controller
 
     public function assignUserTools(Request $request, $id)
     {
-        dd($request->all());
+        dd($id);
         $user_id = $id;
         $validator = Validator::make($request->all(), [
             // 'name' => 'required',
