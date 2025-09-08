@@ -80,10 +80,9 @@ class ToolsController extends Controller
                 ->latest()
                 ->get()
                 ->map(function ($tool) {
-                    // Convert JSON string fields to arrays
-                    $tool->target_audience = json_decode($tool->target_audience, true);
-                    $tool->goals = json_decode($tool->goals, true);
+                    // Convert comma-separated string to array
                     $tool->target_audience = explode(',', $tool->target_audience);
+                    $tool->goals = json_decode($tool->goals, true);
                     return $tool;
                 });
 
@@ -116,9 +115,9 @@ class ToolsController extends Controller
         }, $goals, $goalValues);
 
         $goals_json_format = json_encode($finalGoals);
- 
+
         $target_audiences = $request->input('target_audience');
- 
+
         $admin_user_tools = AdminUserTool::where('user_id', '=', $id)->where('tool_id', '=', $request->input('tool_id'))->first();
 
         if (!empty($admin_user_tools)) {
@@ -135,7 +134,7 @@ class ToolsController extends Controller
         $user_tools->budget = $request->input('budget');
         $user_tools->deadline = $request->input('deadline');
         $user_tools->supplier = $request->input('supplier');
-        $user_tools->target_audience = implode(',',$target_audiences);
+        $user_tools->target_audience = implode(',', $target_audiences);
         $user_tools->goals =  $goals_json_format;
         $user_tools->save();
         return response()->json(['success' => true, 'message' =>  $message, 'data' => $user_tools], 200);
