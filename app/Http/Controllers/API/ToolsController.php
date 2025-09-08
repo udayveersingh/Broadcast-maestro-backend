@@ -92,10 +92,9 @@ class ToolsController extends Controller
 
     public function assignUserTools(Request $request, $id)
     {
-        dd($request->all());
         $user_id = $id;
         $validator = Validator::make($request->all(), [
-            // 'name' => 'required',
+            'name' => 'required',
             'tool_id' => 'required',
         ]);
         if ($validator->fails()) {
@@ -105,6 +104,8 @@ class ToolsController extends Controller
                 'message' =>  $error
             ], 400);
         }
+
+        dd($request->all());
 
         $goals = $request->input('goals');
         $goalValues = $request->input('goals_value');
