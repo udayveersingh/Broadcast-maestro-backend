@@ -105,8 +105,6 @@ class ToolsController extends Controller
             ], 400);
         }
 
-        dd($request->all());
-
 
         $goals = $request->input('goals');
         $goalValues = $request->input('goals_value');
@@ -116,7 +114,9 @@ class ToolsController extends Controller
         }, $goals, $goalValues);
 
         $goals_json_format = json_encode($finalGoals);
-
+ 
+        $target_audiences = !empty($request->input('target_audience')) ? $request->input('target_audience'):'';
+ 
         $admin_user_tools = AdminUserTool::where('user_id', '=', $id)->where('tool_id', '=', $request->input('tool_id'))->first();
 
         if (!empty($admin_user_tools)) {
@@ -133,7 +133,7 @@ class ToolsController extends Controller
         $user_tools->budget = $request->input('budget');
         $user_tools->deadline = $request->input('deadline');
         $user_tools->supplier = $request->input('supplier');
-        $user_tools->target_audience = $request->input('target_audience');
+        $user_tools->target_audience =  implode(',',$target_audiences);
         $user_tools->goals =  $goals_json_format;
         $user_tools->save();
         return response()->json(['success' => true, 'message' =>  $message, 'data' => $user_tools], 200);
