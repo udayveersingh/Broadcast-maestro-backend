@@ -115,9 +115,6 @@ class ToolsController extends Controller
 
         $goals_json_format = json_encode($finalGoals);
 
-        dd( $goals_json_format );
-
-
         $admin_user_tools = AdminUserTool::where('user_id', '=', $id)->where('tool_id', '=', $request->input('tool_id'))->first();
 
         if (!empty($admin_user_tools)) {
