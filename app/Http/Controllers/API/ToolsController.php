@@ -81,6 +81,7 @@ class ToolsController extends Controller
                 ->get()
                 ->map(function ($tool) {
                     // Convert comma-separated string to array
+                    $tool->target_audience = json_decode($tool->target_audience, true);
                     $tool->target_audience = explode(',', $tool->target_audience);
                     $tool->goals = json_decode($tool->goals, true);
                     return $tool;
