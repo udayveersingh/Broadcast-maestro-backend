@@ -95,7 +95,7 @@ class ToolsController extends Controller
         dd($request->all());
         $user_id = $id;
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            // 'name' => 'required',
             'tool_id' => 'required',
         ]);
         if ($validator->fails()) {
