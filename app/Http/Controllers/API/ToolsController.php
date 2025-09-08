@@ -115,7 +115,7 @@ class ToolsController extends Controller
 
         $goals_json_format = json_encode($finalGoals);
  
-        $target_audiences = !empty($request->input('target_audience')) ? $request->input('target_audience'):'';
+        $target_audiences = $request->input('target_audience');
  
         $admin_user_tools = AdminUserTool::where('user_id', '=', $id)->where('tool_id', '=', $request->input('tool_id'))->first();
 
