@@ -83,6 +83,7 @@ class ToolsController extends Controller
                     // Convert JSON string fields to arrays
                     $tool->target_audience = json_decode($tool->target_audience, true);
                     $tool->goals = json_decode($tool->goals, true);
+                    $tool->target_audience = explode(',', $tool->target_audience);
                     return $tool;
                 });
 
